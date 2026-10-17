@@ -3,12 +3,26 @@ import { useEffect, useMemo, useState } from 'react';
 const asset = (path) => (import.meta.env.BASE_URL + path).replace('//assets', '/assets');
 const repo = 'https://github.com/trebronwayne/bluebird-release';
 const releasesUrl = repo + '/releases';
-const latestVersion = '2.1';
+const latestVersion = '2.3';
 
 const releases = [
   {
-    version: '2.1',
+    version: '2.3',
     status: 'Latest',
+    note: 'Major update',
+    date: 'See release page',
+    releaseUrl: releasesUrl + '/tag/v2.3'
+  },
+  {
+    version: '2.2',
+    status: 'Previous',
+    note: 'Major update',
+    date: 'See release page',
+    releaseUrl: releasesUrl + '/tag/v2.2'
+  },
+  {
+    version: '2.1',
+    status: 'Previous',
     note: 'Latest improvements and fixes',
     date: 'September 2026',
     releaseUrl: releasesUrl + '/tag/v2.1',
@@ -43,10 +57,11 @@ function Arrow() {
 }
 
 function DownloadButton({ release, secondary = false }) {
-  const href = release.downloadUrl || release.fallbackUrl;
+  const hasApk = Boolean(release.downloadUrl || release.fallbackUrl);
+  const href = release.downloadUrl || release.fallbackUrl || release.releaseUrl;
   return (
-    <a className={'button ' + (secondary ? 'button-secondary' : 'button-primary')} href={href} download={!release.downloadUrl}>
-      Download APK <Arrow />
+    <a className={'button ' + (secondary ? 'button-secondary' : 'button-primary')} href={href} download={!release.downloadUrl && Boolean(release.fallbackUrl)}>
+      {hasApk ? 'Download APK' : 'View release'} <Arrow />
     </a>
   );
 }
@@ -118,7 +133,7 @@ function App() {
             downloadUrl: apkAssets[0]?.browser_download_url,
             releaseUrl: release.html_url
           };
-        }).filter((release) => release.downloadUrl);
+        });
         if (releaseData.length > 0) {
           setDownloadData({
             status: 'live',
@@ -160,7 +175,7 @@ function App() {
           <a href="#installation" onClick={closeMenu}>Installation</a>
           <a href="#privacy" onClick={closeMenu}>Privacy</a>
           <a href={repo} target="_blank" rel="noreferrer" onClick={closeMenu}>Source</a>
-          <a className="nav-download" href={latestRelease.downloadUrl || latestRelease.fallbackUrl} download={!latestRelease.downloadUrl} onClick={closeMenu}>Download APK</a>
+          <a className="nav-download" href={latestRelease.downloadUrl || latestRelease.fallbackUrl || latestRelease.releaseUrl} download={!latestRelease.downloadUrl && Boolean(latestRelease.fallbackUrl)} onClick={closeMenu}>{latestRelease.downloadUrl || latestRelease.fallbackUrl ? 'Download APK' : 'View latest release'}</a>
         </nav>
       </header>
 
@@ -208,7 +223,7 @@ function App() {
               <span>{release.date}</span>
               <span><b className={release.version === latestVersion ? 'status-latest' : 'status-previous'}>{release.status}</b></span>
               <span className="release-count">{release.downloads === undefined ? '—' : formatNumber(release.downloads)}</span>
-              <span className="release-actions"><a href={release.downloadUrl || release.fallbackUrl} download={!release.downloadUrl}>Download</a><a href={release.releaseUrl} target="_blank" rel="noreferrer">Notes</a></span>
+              <span className="release-actions"><a href={release.downloadUrl || release.fallbackUrl || release.releaseUrl} download={!release.downloadUrl && Boolean(release.fallbackUrl)}>{release.downloadUrl || release.fallbackUrl ? 'Download' : 'APK pending'}</a><a href={release.releaseUrl} target="_blank" rel="noreferrer">Notes</a></span>
             </div>)}
           </div>
           <p className="data-note">Download counts are asset-download totals, not unique users or installations. <a href={repo + '/releases'} target="_blank" rel="noreferrer">View releases on GitHub <Arrow /></a></p>
