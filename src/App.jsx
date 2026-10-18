@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const asset = (path) => (import.meta.env.BASE_URL + path).replace('//assets', '/assets');
-const repo = 'https://github.com/trebronwayne/bluebird-release';
+const repo = 'https://github.com/trebronwayne/trebronwayne.github.io';
 const releasesUrl = repo + '/releases';
 const latestVersion = '2.3';
 
@@ -121,7 +121,7 @@ function App() {
     const fallback = fetch(asset('downloads.json'), { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : null)
       .catch(() => null);
-    fetch('https://api.github.com/repos/trebronwayne/bluebird-release/releases?per_page=100', { headers: { Accept: 'application/vnd.github+json' } })
+    fetch('https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases?per_page=100', { headers: { Accept: 'application/vnd.github+json' } })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('GitHub release data unavailable')))
       .then((githubReleases) => {
         const releaseData = githubReleases.map((release) => {
