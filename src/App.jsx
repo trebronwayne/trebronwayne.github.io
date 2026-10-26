@@ -3,12 +3,19 @@ import { useEffect, useMemo, useState } from 'react';
 const asset = (path) => (import.meta.env.BASE_URL + path).replace('//assets', '/assets');
 const repo = 'https://github.com/trebronwayne/trebronwayne.github.io';
 const releasesUrl = repo + '/releases';
-const latestVersion = '2.3';
+const latestVersion = '2.4';
 
 const releases = [
   {
-    version: '2.3',
+    version: '2.4',
     status: 'Latest',
+    note: 'See release page',
+    date: 'See release page',
+    releaseUrl: releasesUrl + '/tag/v2.4'
+  },
+  {
+    version: '2.3',
+    status: 'Previous',
     note: 'Major update',
     date: 'See release page',
     releaseUrl: releasesUrl + '/tag/v2.3'
