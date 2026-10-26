@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const asset = (path) => (import.meta.env.BASE_URL + path).replace('//assets', '/assets');
-const repo = 'https://github.com/trebronwayne/trebronwayne.github.io';
-const releasesUrl = repo + '/releases';
+const releaseRepo = 'https://github.com/trebronwayne/trebronwayne.github.io';
+const sourceRepo = 'https://github.com/trebronwayne/bluebird';
+const sourceApi = 'https://api.github.com/repos/trebronwayne/bluebird';
+const releasesUrl = releaseRepo + '/releases';
 const latestVersion = '2.4';
 
 const releases = [
@@ -92,10 +94,32 @@ function formatNumber(value) {
   return new Intl.NumberFormat('en-US').format(value);
 }
 
+async function fetchAllGitHubPages(endpoint) {
+  const items = [];
+  let page = 1;
+
+  while (true) {
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const response = await fetch(endpoint + separator + 'per_page=100&page=' + page, {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!response.ok) throw new Error('GitHub community data unavailable');
+
+    const pageItems = await response.json();
+    if (!Array.isArray(pageItems)) throw new Error('Unexpected GitHub response');
+    items.push(...pageItems);
+    if (pageItems.length < 100) return items;
+    page += 1;
+  }
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [downloadData, setDownloadData] = useState(null);
   const [siteViews, setSiteViews] = useState(null);
+  const [showPreviousReleases, setShowPreviousReleases] = useState(false);
+  const [supporterData, setSupporterData] = useState({ status: 'loading', members: [], stars: 0, issueCount: 0 });
+  const [shareMessage, setShareMessage] = useState('');
 
   useEffect(() => {
     document.title = 'Bluebird — Android launcher releases';
@@ -157,7 +181,78 @@ function App() {
     return () => window.clearTimeout(viewTimer);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all([
+      fetchAllGitHubPages(sourceApi + '/stargazers'),
+      fetchAllGitHubPages(sourceApi + '/issues?state=all&direction=desc&sort=created')
+    ]).then(([stargazers, issues]) => {
+      const membersByLogin = new Map();
+      const getMember = (user) => {
+        if (!user?.login || user.type === 'Bot') return null;
+        const key = user.login.toLowerCase();
+        if (!membersByLogin.has(key)) {
+          membersByLogin.set(key, {
+            login: user.login,
+            htmlUrl: 'https://github.com/' + encodeURIComponent(user.login),
+            avatarUrl: user.avatar_url,
+            starred: false,
+            issuesOpened: 0
+          });
+        }
+        return membersByLogin.get(key);
+      };
+
+      stargazers.forEach((user) => {
+        const member = getMember(user);
+        if (member) member.starred = true;
+      });
+
+      const issueRecords = issues.filter((issue) => !issue.pull_request && issue.user?.login);
+      issueRecords.forEach((issue) => {
+        const member = getMember(issue.user);
+        if (member) member.issuesOpened += 1;
+      });
+
+      const members = [...membersByLogin.values()].sort((a, b) =>
+        b.issuesOpened - a.issuesOpened ||
+        Number(b.starred) - Number(a.starred) ||
+        a.login.localeCompare(b.login)
+      );
+
+      const humanStarCount = stargazers.filter((user) => user?.login && user.type !== 'Bot').length;
+      if (!cancelled) setSupporterData({ status: 'ready', members, stars: humanStarCount, issueCount: issueRecords.length });
+    }).catch(() => {
+      if (!cancelled) setSupporterData({ status: 'error', members: [], stars: 0, issueCount: 0 });
+    });
+
+    return () => { cancelled = true; };
+  }, []);
+
   const closeMenu = () => setMenuOpen(false);
+  const shareBluebird = async () => {
+    const shareUrl = 'https://trebronwayne.github.io/';
+    const shareData = {
+      title: 'Bluebird — Android launcher',
+      text: 'Try Bluebird, a desktop-style Android launcher with floating windows and a taskbar.',
+      url: shareUrl
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        setShareMessage('Thanks for helping Bluebird reach more people.');
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareMessage('Site link copied. Share it with someone who might enjoy Bluebird.');
+      } else {
+        setShareMessage('Share Bluebird: ' + shareUrl);
+      }
+    } catch (error) {
+      if (error?.name !== 'AbortError') setShareMessage('Copy this link to share Bluebird: ' + shareUrl);
+    }
+  };
   const releaseData = downloadData?.releases || [];
   const mergedReleases = useMemo(() => releases.map((release) => {
     const current = releaseData.find((item) => item.version === release.version);
@@ -179,9 +274,10 @@ function App() {
         </button>
         <nav className={menuOpen ? 'site-nav open' : 'site-nav'} aria-label="Main navigation">
           <a href="#releases" onClick={closeMenu}>Releases</a>
+          <a href="#support" onClick={closeMenu}>Support</a>
           <a href="#installation" onClick={closeMenu}>Installation</a>
           <a href="#privacy" onClick={closeMenu}>Privacy</a>
-          <a href={repo} target="_blank" rel="noreferrer" onClick={closeMenu}>Source</a>
+          <a href={sourceRepo} target="_blank" rel="noreferrer" onClick={closeMenu}>Source</a>
           <a className="nav-download" href={latestRelease.downloadUrl || latestRelease.fallbackUrl || latestRelease.releaseUrl} download={!latestRelease.downloadUrl && Boolean(latestRelease.fallbackUrl)} onClick={closeMenu}>{latestRelease.downloadUrl || latestRelease.fallbackUrl ? 'Download APK' : 'View latest release'}</a>
         </nav>
       </header>
@@ -225,7 +321,7 @@ function App() {
           </div>
           <div className="release-table" role="table" aria-label="Bluebird releases">
             <div className="release-table-head" role="row"><span>Version</span><span>Release date</span><span>Status</span><span>Downloads</span><span aria-label="Actions"></span></div>
-            {mergedReleases.map((release) => <div className="release-row" role="row" key={release.version}>
+            {(showPreviousReleases ? mergedReleases : mergedReleases.filter((release) => release.version === latestVersion)).map((release) => <div className="release-row" role="row" key={release.version}>
               <strong>v{release.version}</strong>
               <span>{release.date}</span>
               <span><b className={release.version === latestVersion ? 'status-latest' : 'status-previous'}>{release.status}</b></span>
@@ -233,7 +329,10 @@ function App() {
               <span className="release-actions"><a href={release.downloadUrl || release.fallbackUrl || release.releaseUrl} download={!release.downloadUrl && Boolean(release.fallbackUrl)}>{release.downloadUrl || release.fallbackUrl ? 'Download' : 'APK pending'}</a><a href={release.releaseUrl} target="_blank" rel="noreferrer">Notes</a></span>
             </div>)}
           </div>
-          <p className="data-note">Download counts are asset-download totals, not unique users or installations. <a href={repo + '/releases'} target="_blank" rel="noreferrer">View releases on GitHub <Arrow /></a></p>
+          <button className="release-toggle" type="button" aria-expanded={showPreviousReleases} onClick={() => setShowPreviousReleases(!showPreviousReleases)}>
+            {showPreviousReleases ? 'Hide previous versions' : 'Show previous versions'} <span aria-hidden="true">{showPreviousReleases ? '−' : '+'}</span>
+          </button>
+          <p className="data-note">Download counts are asset-download totals, not unique users or installations. <a href={releaseRepo + '/releases'} target="_blank" rel="noreferrer">View releases on GitHub <Arrow /></a></p>
         </section>
 
         <section className="section showcase" id="showcase">
@@ -253,6 +352,45 @@ function App() {
           </div>
         </section>
 
+        <section className="section support-section" id="support">
+          <div className="support-panel">
+            <div className="section-heading">
+              <div><p className="kicker">Community</p><h2>Help Bluebird <span>grow.</span></h2></div>
+              <p className="section-intro">Bluebird grows when people share it, star the open-source project, and help improve it. Every recommendation and useful issue helps the next person find Bluebird.</p>
+            </div>
+            <div className="support-actions">
+              <button className="button button-primary" type="button" onClick={shareBluebird}>Share Bluebird <Arrow /></button>
+              <a className="button button-secondary" href={sourceRepo} target="_blank" rel="noreferrer">Star on GitHub <Arrow /></a>
+              <a className="support-issue-link" href={sourceRepo + '/issues/new'} target="_blank" rel="noreferrer">Report an issue <Arrow /></a>
+            </div>
+            {shareMessage && <p className="support-feedback" aria-live="polite">{shareMessage}</p>}
+            <div className="member-heading">
+              <div><p className="kicker">Bluebird members</p><h3>People moving Bluebird forward.</h3></div>
+              {supporterData.status === 'ready' && <p>{formatNumber(supporterData.members.length)} members · {formatNumber(supporterData.stars)} stars · {formatNumber(supporterData.issueCount)} issues opened</p>}
+            </div>
+            {supporterData.status === 'loading' && <p className="member-state">Loading public GitHub supporters…</p>}
+            {supporterData.status === 'error' && <p className="member-state">The member list is temporarily unavailable. You can still support Bluebird on GitHub.</p>}
+            {supporterData.status === 'ready' && supporterData.members.length === 0 && <p className="member-state">Be the first community member—star the project or open an issue.</p>}
+            {supporterData.status === 'ready' && supporterData.members.length > 0 && <div className="member-grid">
+              {supporterData.members.map((member) => (
+                <a className="member-card" href={member.htmlUrl} target="_blank" rel="noreferrer" key={member.login}>
+                  <img src={member.avatarUrl} alt="" loading="lazy" />
+                  <span className="member-copy">
+                    <strong>{member.login}</strong>
+                    <span>{member.issuesOpened ? formatNumber(member.issuesOpened) + ' ' + (member.issuesOpened === 1 ? 'issue opened' : 'issues opened') : 'Community stargazer'}</span>
+                    <span className="member-badges">
+                      {member.starred && <b>Stargazer</b>}
+                      {member.login.toLowerCase() === 'trebronwayne' && <b>Maintainer</b>}
+                    </span>
+                  </span>
+                  <Arrow />
+                </a>
+              ))}
+            </div>}
+            <p className="data-note">Member credits use public GitHub stargazers and issue openers; issue openers are ranked by the number of issues they opened. Sharing is not tracked, so no account is listed for sharing alone.</p>
+          </div>
+        </section>
+
         <section className="section docs-section" id="installation">
           <div className="docs-panel">
             <div className="section-heading"><div><p className="kicker">Installation</p><h2>Install <span>Bluebird.</span></h2></div><p className="section-intro">Download the APK, install it on an Android device, and select Bluebird as the default home application.</p></div>
@@ -268,7 +406,7 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <div className="footer-main"><a className="brand" href="#home"><span className="brand-mark"><img src={asset('assets/img/logo_1.png')} alt="" /></span><span><strong>Bluebird</strong><small>Android launcher</small></span></a><p>Official release information</p><div className="footer-links"><a href={repo} target="_blank" rel="noreferrer">Source</a><a href="#privacy">Privacy</a><a href="#installation">Installation</a></div></div>
+        <div className="footer-main"><a className="brand" href="#home"><span className="brand-mark"><img src={asset('assets/img/logo_1.png')} alt="" /></span><span><strong>Bluebird</strong><small>Android launcher</small></span></a><p>Official release information</p><div className="footer-links"><a href={sourceRepo} target="_blank" rel="noreferrer">Source</a><a href="#support">Support</a><a href="#privacy">Privacy</a><a href="#installation">Installation</a></div></div>
         <div className="footer-bottom"><span>© 2024–2026 Bluebird</span><span>Android launcher · Uganda</span></div>
       </footer>
     </div>
