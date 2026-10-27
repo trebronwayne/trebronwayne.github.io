@@ -1,0 +1,31 @@
+{
+  "updatedAt": "27 October 2026",
+  "stargazers": [
+    {
+      "login": "trebronwayne",
+      "avatar_url": "https://avatars.githubusercontent.com/u/192793440?v=4"
+    },
+    {
+      "login": "johnnyd87",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70348853?v=4"
+    }
+  ],
+  "issueCount": 4,
+  "issueOpeners": [
+    {
+      "login": "atirigo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/325614339?v=4",
+      "count": 2
+    },
+    {
+      "login": "josephkidega82-a11y",
+      "avatar_url": "https://avatars.githubusercontent.com/u/321167898?v=4",
+      "count": 1
+    },
+    {
+      "login": "xpkwayne-svg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/324627644?v=4",
+      "count": 1
+    }
+  ]
+}
