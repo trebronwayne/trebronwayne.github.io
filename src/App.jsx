@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import supporterSnapshot from './supportersSnapshot.json';
 
 const asset = (path) => (import.meta.env.BASE_URL + path).replace('//assets', '/assets');
 const releaseRepo = 'https://github.com/trebronwayne/trebronwayne.github.io';
@@ -113,12 +114,52 @@ async function fetchAllGitHubPages(endpoint) {
   }
 }
 
+function buildSupporterMembers(stargazers, issueRecords) {
+  const membersByLogin = new Map();
+  const getMember = (user) => {
+    if (!user?.login || user.type === 'Bot') return null;
+    const key = user.login.toLowerCase();
+    if (!membersByLogin.has(key)) {
+      membersByLogin.set(key, {
+        login: user.login,
+        htmlUrl: 'https://github.com/' + encodeURIComponent(user.login),
+        avatarUrl: user.avatar_url,
+        starred: false,
+        issuesOpened: 0
+      });
+    }
+    return membersByLogin.get(key);
+  };
+
+  stargazers.forEach((user) => {
+    const member = getMember(user);
+    if (member) member.starred = true;
+  });
+
+  issueRecords.forEach((issue) => {
+    if (issue.pull_request) return;
+    const member = getMember(issue.user || issue);
+    if (member) member.issuesOpened += Number.isInteger(issue.count) ? issue.count : 1;
+  });
+
+  return [...membersByLogin.values()].sort((a, b) =>
+    b.issuesOpened - a.issuesOpened ||
+    Number(b.starred) - Number(a.starred) ||
+    a.login.localeCompare(b.login)
+  );
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [downloadData, setDownloadData] = useState(null);
   const [siteViews, setSiteViews] = useState(null);
   const [showPreviousReleases, setShowPreviousReleases] = useState(false);
-  const [supporterData, setSupporterData] = useState({ status: 'loading', members: [], stars: 0, issueCount: 0 });
+  const [supporterData, setSupporterData] = useState(() => ({
+    members: buildSupporterMembers(supporterSnapshot.stargazers, supporterSnapshot.issueOpeners),
+    stars: supporterSnapshot.stargazers.length,
+    issueCount: supporterSnapshot.issueCount,
+    issueRefreshFailed: false
+  }));
   const [shareMessage, setShareMessage] = useState('');
 
   useEffect(() => {
@@ -184,47 +225,16 @@ function App() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      fetchAllGitHubPages(sourceApi + '/stargazers'),
-      fetchAllGitHubPages(sourceApi + '/issues?state=all&direction=desc&sort=created')
-    ]).then(([stargazers, issues]) => {
-      const membersByLogin = new Map();
-      const getMember = (user) => {
-        if (!user?.login || user.type === 'Bot') return null;
-        const key = user.login.toLowerCase();
-        if (!membersByLogin.has(key)) {
-          membersByLogin.set(key, {
-            login: user.login,
-            htmlUrl: 'https://github.com/' + encodeURIComponent(user.login),
-            avatarUrl: user.avatar_url,
-            starred: false,
-            issuesOpened: 0
-          });
-        }
-        return membersByLogin.get(key);
-      };
-
-      stargazers.forEach((user) => {
-        const member = getMember(user);
-        if (member) member.starred = true;
-      });
-
+    fetchAllGitHubPages(sourceApi + '/issues?state=all&direction=desc&sort=created').then((issues) => {
       const issueRecords = issues.filter((issue) => !issue.pull_request && issue.user?.login);
-      issueRecords.forEach((issue) => {
-        const member = getMember(issue.user);
-        if (member) member.issuesOpened += 1;
+      if (!cancelled) setSupporterData({
+        members: buildSupporterMembers(supporterSnapshot.stargazers, issueRecords),
+        stars: supporterSnapshot.stargazers.length,
+        issueCount: issueRecords.length,
+        issueRefreshFailed: false
       });
-
-      const members = [...membersByLogin.values()].sort((a, b) =>
-        b.issuesOpened - a.issuesOpened ||
-        Number(b.starred) - Number(a.starred) ||
-        a.login.localeCompare(b.login)
-      );
-
-      const humanStarCount = stargazers.filter((user) => user?.login && user.type !== 'Bot').length;
-      if (!cancelled) setSupporterData({ status: 'ready', members, stars: humanStarCount, issueCount: issueRecords.length });
     }).catch(() => {
-      if (!cancelled) setSupporterData({ status: 'error', members: [], stars: 0, issueCount: 0 });
+      if (!cancelled) setSupporterData((current) => ({ ...current, issueRefreshFailed: true }));
     });
 
     return () => { cancelled = true; };
@@ -366,12 +376,10 @@ function App() {
             {shareMessage && <p className="support-feedback" aria-live="polite">{shareMessage}</p>}
             <div className="member-heading">
               <div><p className="kicker">Bluebird members</p><h3>People moving Bluebird forward.</h3></div>
-              {supporterData.status === 'ready' && <p>{formatNumber(supporterData.members.length)} members · {formatNumber(supporterData.stars)} stars · {formatNumber(supporterData.issueCount)} issues opened</p>}
+              <p>{formatNumber(supporterData.members.length)} members · {formatNumber(supporterData.stars)} stars · {formatNumber(supporterData.issueCount)} issues opened</p>
             </div>
-            {supporterData.status === 'loading' && <p className="member-state">Loading public GitHub supporters…</p>}
-            {supporterData.status === 'error' && <p className="member-state">The member list is temporarily unavailable. You can still support Bluebird on GitHub.</p>}
-            {supporterData.status === 'ready' && supporterData.members.length === 0 && <p className="member-state">Be the first community member—star the project or open an issue.</p>}
-            {supporterData.status === 'ready' && supporterData.members.length > 0 && <div className="member-grid">
+            {supporterData.members.length === 0 && <p className="member-state">Be the first community member—star the project or open an issue.</p>}
+            {supporterData.members.length > 0 && <div className="member-grid">
               {supporterData.members.map((member) => (
                 <a className="member-card" href={member.htmlUrl} target="_blank" rel="noreferrer" key={member.login}>
                   <img src={member.avatarUrl} alt="" loading="lazy" />
@@ -387,7 +395,8 @@ function App() {
                 </a>
               ))}
             </div>}
-            <p className="data-note">Member credits use public GitHub stargazers and issue openers; issue openers are ranked by the number of issues they opened. Sharing is not tracked, so no account is listed for sharing alone.</p>
+            {supporterData.issueRefreshFailed && <p className="member-state">Live issue-opener counts could not be refreshed; the latest saved credits are still shown.</p>}
+            <p className="data-note">Stargazers are a snapshot from {supporterSnapshot.updatedAt}; issue-opener credits refresh from GitHub. Issue openers are ranked by the number of issues they opened. Shares are not tracked, so no account is listed for sharing alone.</p>
           </div>
         </section>
 
