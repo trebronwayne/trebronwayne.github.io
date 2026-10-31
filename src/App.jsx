@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import supporterSnapshot from './supportersSnapshot.json';
+import { SiteLink } from './site-router.jsx';
 
-const asset = (path) => (import.meta.env.BASE_URL + path).replace('//assets', '/assets');
+const asset = (path) => `/${path.replace(/^\/+/, '')}`;
 const releaseRepo = 'https://github.com/trebronwayne/trebronwayne.github.io';
 const sourceRepo = 'https://github.com/trebronwayne/bluebird';
 const sourceApi = 'https://api.github.com/repos/trebronwayne/bluebird';
 const releasesUrl = releaseRepo + '/releases';
-const latestVersion = '2.4';
+const fallbackLatestVersion = '2.4';
 
 const releases = [
   {
@@ -149,7 +150,7 @@ function buildSupporterMembers(stargazers, issueRecords) {
   );
 }
 
-function App() {
+function BluebirdPage({ page = 'home' }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [downloadData, setDownloadData] = useState(null);
   const [siteViews, setSiteViews] = useState(null);
@@ -163,7 +164,24 @@ function App() {
   const [shareMessage, setShareMessage] = useState('');
 
   useEffect(() => {
-    document.title = 'Bluebird — Android launcher releases';
+    const pageTitles = {
+      home: 'Bluebird — Android launcher',
+      about: 'About Bluebird — Android launcher',
+      support: 'Bluebird support and installation',
+      releases: 'Bluebird releases'
+    };
+    const pageDescriptions = {
+      home: 'Bluebird is a desktop-style Android launcher with floating windows, a taskbar, and built-in applications.',
+      about: 'Explore Bluebird features, screenshots, and privacy information.',
+      support: 'Installation steps and community support for the Bluebird Android launcher.',
+      releases: 'Bluebird Android APK releases, version history, and download information.'
+    };
+    document.title = pageTitles[page] || pageTitles.home;
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.content = pageDescriptions[page] || pageDescriptions.home;
+  }, [page]);
+
+  useEffect(() => {
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
@@ -196,16 +214,25 @@ function App() {
     fetch('https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases?per_page=100', { headers: { Accept: 'application/vnd.github+json' } })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('GitHub release data unavailable')))
       .then((githubReleases) => {
-        const releaseData = githubReleases.map((release) => {
-          const apkAssets = (release.assets || []).filter((item) => item.name.toLowerCase().endsWith('.apk'));
+        const releaseData = githubReleases
+          .filter((release) => !release.draft && !release.prerelease)
+          .map((release) => {
+          const assets = release.assets || [];
+          const isBluebird = /bluebird/i.test([release.name, release.tag_name, ...assets.map((item) => item.name)].filter(Boolean).join(' '));
+          const apkAssets = assets.filter((item) => /\.apk$/i.test(item.name || ''));
+          if (!isBluebird || apkAssets.length === 0) return null;
           return {
-            version: release.tag_name.replace(/^v/, ''),
+            version: (release.tag_name || '').replace(/^v/i, ''),
+            status: 'Previous',
             date: new Date(release.published_at || release.created_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }),
             downloads: apkAssets.reduce((total, item) => total + item.download_count, 0),
             downloadUrl: apkAssets[0]?.browser_download_url,
-            releaseUrl: release.html_url
+            releaseUrl: release.html_url,
+            publishedAt: release.published_at || release.created_at
           };
-        });
+        })
+          .filter(Boolean)
+          .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
         if (releaseData.length > 0) {
           setDownloadData({
             status: 'live',
@@ -223,6 +250,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (page !== 'support') return undefined;
     let cancelled = false;
 
     fetchAllGitHubPages(sourceApi + '/issues?state=all&direction=desc&sort=created').then((issues) => {
@@ -238,11 +266,11 @@ function App() {
     });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [page]);
 
   const closeMenu = () => setMenuOpen(false);
   const shareBluebird = async () => {
-    const shareUrl = 'https://trebronwayne.github.io/';
+    const shareUrl = 'https://trebronwayne.github.io/bluebird';
     const shareData = {
       title: 'Bluebird — Android launcher',
       text: 'Try Bluebird, a desktop-style Android launcher with floating windows and a taskbar.',
@@ -264,43 +292,49 @@ function App() {
     }
   };
   const releaseData = downloadData?.releases || [];
-  const mergedReleases = useMemo(() => releases.map((release) => {
-    const current = releaseData.find((item) => item.version === release.version);
-    return { ...release, ...(current || {}) };
-  }), [releaseData]);
-  const latestRelease = mergedReleases.find((release) => release.version === latestVersion) || mergedReleases[0];
+  const mergedReleases = useMemo(() => {
+    if (releaseData.length > 0) {
+      return releaseData.map((release, index) => ({
+        ...release,
+        status: index === 0 ? 'Latest' : 'Previous'
+      }));
+    }
+    return releases;
+  }, [releaseData]);
+  const latestRelease = mergedReleases[0] || releases[0];
+  const latestVersion = latestRelease?.version || fallbackLatestVersion;
   const totalDownloads = downloadData?.totalApkDownloads;
   const updatedDate = downloadData?.updatedAt ? new Date(downloadData.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
 
   return (
     <div className="site-shell">
       <header className="site-header">
-        <a className="brand" href="#home" onClick={closeMenu}>
+        <SiteLink className="brand" to="/bluebird/home" onClick={closeMenu}>
           <span className="brand-mark"><img src={asset('assets/img/logo_1.png')} alt="" /></span>
           <span><strong>Bluebird</strong><small>Android launcher</small></span>
-        </a>
+        </SiteLink>
         <button className="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           <span></span><span></span>
         </button>
         <nav className={menuOpen ? 'site-nav open' : 'site-nav'} aria-label="Main navigation">
-          <a href="#releases" onClick={closeMenu}>Releases</a>
-          <a href="#support" onClick={closeMenu}>Support</a>
-          <a href="#installation" onClick={closeMenu}>Installation</a>
-          <a href="#privacy" onClick={closeMenu}>Privacy</a>
+          <SiteLink to="/bluebird/home" onClick={closeMenu}>Home</SiteLink>
+          <SiteLink to="/bluebird/releases" onClick={closeMenu}>Releases</SiteLink>
+          <SiteLink to="/bluebird/about" onClick={closeMenu}>About</SiteLink>
+          <SiteLink to="/bluebird/support" onClick={closeMenu}>Support</SiteLink>
           <a href={sourceRepo} target="_blank" rel="noreferrer" onClick={closeMenu}>Source</a>
           <a className="nav-download" href={latestRelease.downloadUrl || latestRelease.fallbackUrl || latestRelease.releaseUrl} download={!latestRelease.downloadUrl && Boolean(latestRelease.fallbackUrl)} onClick={closeMenu}>{latestRelease.downloadUrl || latestRelease.fallbackUrl ? 'Download APK' : 'View latest release'}</a>
         </nav>
       </header>
 
       <main>
-        <section className="hero section" id="home">
+        {page === 'home' && <section className="hero section" id="home">
           <div className="hero-copy">
             <p className="kicker">Official release site</p>
             <h1>Bluebird for <span>Android.</span></h1>
             <p className="hero-lede">A desktop-style Android launcher with floating windows, a taskbar, and built-in applications.</p>
             <div className="hero-actions">
               <DownloadButton release={latestRelease} />
-              <a className="text-link" href="#releases">View release history <Arrow /></a>
+              <SiteLink className="text-link" to="/bluebird/releases">View release history <Arrow /></SiteLink>
             </div>
             <div className="hero-meta"><span>Latest v{latestVersion}</span><i></i><span>Android 8.0+</span><i></i><span>No root required</span></div>
           </div>
@@ -310,28 +344,40 @@ function App() {
               <img src={asset('assets/img/screenshots/desktop.png')} alt="Bluebird desktop-style Android home screen" />
             </div>
           </div>
-        </section>
+        </section>}
 
-        <section className="stats section-compact" aria-label="Release information">
+        {page === 'home' && <section className="stats section-compact" aria-label="Release information">
           <div><strong>v{latestVersion}</strong><span>Latest release</span></div>
           <div><strong>26+</strong><span>Android API</span></div>
-          <div><strong>{totalDownloads === undefined ? '—' : formatNumber(totalDownloads)}</strong><span>Total APK downloads</span></div>
+          <div><strong>{totalDownloads === undefined ? <span className="bluebird-skeleton" aria-hidden="true"></span> : formatNumber(totalDownloads)}</strong><span>Total APK downloads</span></div>
           <div><strong>0</strong><span>Root permissions</span></div>
-          <div><strong>{siteViews === null ? '—' : formatNumber(siteViews)}</strong><span>Site views</span></div>
-        </section>
+          <div><strong>{siteViews === null ? <span className="bluebird-skeleton" aria-hidden="true"></span> : formatNumber(siteViews)}</strong><span>Site views</span></div>
+        </section>}
 
-        <section className="section release-section" id="releases">
+        {page === 'home' && <section className="section bluebird-latest">
+          <div>
+            <p className="kicker">Latest release</p>
+            <h2>Bluebird <span>v{latestVersion}.</span></h2>
+            <p className="section-intro">A desktop-style Android launcher with floating windows, a taskbar, and built-in applications.</p>
+          </div>
+          <div className="bluebird-latest-actions">
+            <DownloadButton release={latestRelease} />
+            <SiteLink className="text-link" to="/bluebird/releases">View all releases <Arrow /></SiteLink>
+          </div>
+        </section>}
+
+        {page === 'releases' && <section className="section release-section" id="releases">
           <div className="section-heading">
             <div><p className="kicker">Release history</p><h2>Available <span>releases.</span></h2></div>
             <p className="section-intro">APK files and release information for Bluebird. Download counts are provided by GitHub release assets.</p>
           </div>
           <div className="release-summary">
-            <div><span className="summary-label">Total APK downloads</span><strong>{totalDownloads === undefined ? '—' : formatNumber(totalDownloads)}</strong><span className="summary-detail">{updatedDate ? 'Updated ' + updatedDate : 'Download data pending first release sync'}</span></div>
+            <div><span className="summary-label">Total APK downloads</span><strong>{totalDownloads === undefined ? <span className="bluebird-skeleton" aria-hidden="true"></span> : formatNumber(totalDownloads)}</strong><span className="summary-detail">{updatedDate ? 'Updated ' + updatedDate : 'Download data pending first release sync'}</span></div>
             <div><span className="summary-label">Latest version</span><strong>v{latestVersion}</strong><span className="summary-detail">Android 8.0 or later · No root access</span></div>
           </div>
           <div className="release-table" role="table" aria-label="Bluebird releases">
             <div className="release-table-head" role="row"><span>Version</span><span>Release date</span><span>Status</span><span>Downloads</span><span aria-label="Actions"></span></div>
-            {(showPreviousReleases ? mergedReleases : mergedReleases.filter((release) => release.version === latestVersion)).map((release) => <div className="release-row" role="row" key={release.version}>
+            {(showPreviousReleases ? mergedReleases : mergedReleases.slice(0, 1)).map((release) => <div className="release-row" role="row" key={release.version}>
               <strong>v{release.version}</strong>
               <span>{release.date}</span>
               <span><b className={release.version === latestVersion ? 'status-latest' : 'status-previous'}>{release.status}</b></span>
@@ -343,9 +389,9 @@ function App() {
             {showPreviousReleases ? 'Hide previous versions' : 'Show previous versions'} <span aria-hidden="true">{showPreviousReleases ? '−' : '+'}</span>
           </button>
           <p className="data-note">Download counts are asset-download totals, not unique users or installations. <a href={releaseRepo + '/releases'} target="_blank" rel="noreferrer">View releases on GitHub <Arrow /></a></p>
-        </section>
+        </section>}
 
-        <section className="section showcase" id="showcase">
+        {page === 'about' && <section className="section showcase" id="showcase">
           <div className="section-heading">
             <div><p className="kicker">Application overview</p><h2>Included <span>features.</span></h2></div>
             <p className="section-intro">A visual overview of the launcher and its included applications.</p>
@@ -353,16 +399,16 @@ function App() {
           <div className="showcase-grid">
             {screenshots.map((shot, index) => <ScreenshotCard key={shot.title} shot={shot} featured={index === 0} />)}
           </div>
-        </section>
+        </section>}
 
-        <section className="section features" id="features">
+        {page === 'about' && <section className="section features" id="features">
           <div className="section-heading split-heading"><div><p className="kicker">Functionality</p><h2>Launcher <span>features.</span></h2></div><p className="section-intro">Bluebird provides a desktop-style surface while remaining an Android home application.</p></div>
           <div className="feature-grid">
             {features.map((feature) => <article className="feature" key={feature.number}><span className="feature-number">{feature.number}</span><h3>{feature.title}</h3><p>{feature.text}</p></article>)}
           </div>
-        </section>
+        </section>}
 
-        <section className="section support-section" id="support">
+        {page === 'support' && <section className="section support-section" id="support">
           <div className="support-panel">
             <div className="section-heading">
               <div><p className="kicker">Community</p><h2>Help Bluebird <span>grow.</span></h2></div>
@@ -398,28 +444,28 @@ function App() {
             {supporterData.issueRefreshFailed && <p className="member-state">Live issue-opener counts could not be refreshed; the latest saved credits are still shown.</p>}
             <p className="data-note">Stargazers are a snapshot from {supporterSnapshot.updatedAt}; issue-opener credits refresh from GitHub. Issue openers are ranked by the number of issues they opened. Shares are not tracked, so no account is listed for sharing alone.</p>
           </div>
-        </section>
+        </section>}
 
-        <section className="section docs-section" id="installation">
+        {page === 'support' && <section className="section docs-section" id="installation">
           <div className="docs-panel">
             <div className="section-heading"><div><p className="kicker">Installation</p><h2>Install <span>Bluebird.</span></h2></div><p className="section-intro">Download the APK, install it on an Android device, and select Bluebird as the default home application.</p></div>
-            <div className="steps"><div><b>01</b><strong>Download the APK</strong><p>Choose a release from the table above.</p></div><div><b>02</b><strong>Install the package</strong><p>Use the file manager or install with ADB.</p></div><div><b>03</b><strong>Select the home app</strong><p>Settings → Apps → Default Apps → Home App → Bluebird.</p></div></div>
+            <div className="steps"><div><b>01</b><strong>Download the APK</strong><p>Choose a version from <SiteLink to="/bluebird/releases">Bluebird releases</SiteLink>.</p></div><div><b>02</b><strong>Install the package</strong><p>Use the file manager or install with ADB.</p></div><div><b>03</b><strong>Select the home app</strong><p>Settings → Apps → Default Apps → Home App → Bluebird.</p></div></div>
             <div className="code-line"><span>adb install Bluebird-v{latestVersion}.apk</span><button type="button" onClick={() => navigator.clipboard?.writeText('adb install Bluebird-v' + latestVersion + '.apk')}>Copy</button></div>
           </div>
-        </section>
+        </section>}
 
-        <section className="legal section-compact" id="privacy">
+        {page === 'about' && <section className="legal section-compact" id="privacy">
           <div><p className="kicker">Privacy</p><h2>Privacy and<br /><span>data handling.</span></h2></div>
           <p>Bluebird does not collect personal data or telemetry from inside the application. Files, settings, and application data remain on the device. This release site uses GoatCounter and Google Analytics to measure visits; downloads and visits to GitHub are subject to their respective privacy policies.</p>
-        </section>
+        </section>}
       </main>
 
       <footer className="site-footer">
-        <div className="footer-main"><a className="brand" href="#home"><span className="brand-mark"><img src={asset('assets/img/logo_1.png')} alt="" /></span><span><strong>Bluebird</strong><small>Android launcher</small></span></a><p>Official release information</p><div className="footer-links"><a href={sourceRepo} target="_blank" rel="noreferrer">Source</a><a href="#support">Support</a><a href="#privacy">Privacy</a><a href="#installation">Installation</a></div></div>
+        <div className="footer-main"><SiteLink className="brand" to="/bluebird/home"><span className="brand-mark"><img src={asset('assets/img/logo_1.png')} alt="" /></span><span><strong>Bluebird</strong><small>Android launcher</small></span></SiteLink><p>Official release information</p><div className="footer-links"><a href={sourceRepo} target="_blank" rel="noreferrer">Source</a><SiteLink to="/bluebird/support">Support</SiteLink><SiteLink to="/bluebird/about#privacy">Privacy</SiteLink><SiteLink to="/bluebird/support#installation">Installation</SiteLink></div></div>
         <div className="footer-bottom"><span>© 2024–2026 Bluebird</span><span>Android launcher · Uganda</span></div>
       </footer>
     </div>
   );
 }
 
-export default App;
+export default BluebirdPage;
