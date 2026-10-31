@@ -1,23 +1,26 @@
-# Bluebird release site
+# Nobert — portfolio and project site
 
-Bluebird is a desktop-style Android launcher with floating windows, a taskbar, and built-in applications. This repository contains the public release site and distributed APK files. The application source is not included.
+This repository publishes the portfolio at `https://trebronwayne.github.io/`, with separate pages for the developer portfolio, Bluebird, and Remote Schools.
 
-## Releases
+## Routes
 
-APK files should be attached to GitHub Releases. The release site reads each release asset's GitHub `download_count` and displays the total download count for all published APK assets.
+- `/` — developer portfolio and selected projects
+- `/cv` — print-friendly CV
+- `/bluebird`, `/bluebird/home`, `/bluebird/about`, `/bluebird/support`, `/bluebird/releases` — Bluebird pages
+- `/remote-schools` — Remote Schools overview and app downloads
 
-The page requests release data directly from GitHub and keeps `downloads.json` as a static fallback for temporary API or rate-limit failures. Only assets ending in `.apk` are included.
+The build creates static entry points for each route so GitHub Pages serves direct links and refreshes without a client-side 404.
 
-The displayed number is an asset-download total. It does not represent unique users, installations, or active devices.
+## GitHub releases
 
-## Release checklist
+Bluebird and Remote Schools releases are published from this public repository. The pages read release assets from the GitHub API at runtime; no site rebuild is needed when a release is published.
 
-1. Create a GitHub Release with a version tag such as `v2.2`.
-2. Upload the APK as a release asset.
-3. Publish the release.
-4. The download-count workflow will update the release site automatically.
+- Bluebird releases are matched by their Bluebird release or asset names. Only Bluebird APK assets contribute to Bluebird's download totals.
+- Remote Schools releases are matched by a release or asset name containing “Remote Schools”, or by the `v1.0.x` tag series. Attach `.apk` and `.exe` assets to the published release.
+- The first Remote Schools tag is expected to be `v1.0.26`. A clear release title such as `Remote Schools v1.0.26` and filenames such as `RemoteSchools-v1.0.26.apk` and `RemoteSchools-v1.0.26.exe` make the release unambiguous.
+- The displayed download counts are asset-download totals, not unique users, installations, or active devices.
 
-The APKs in `assets/apks/` are retained as fallback files for the release site while the corresponding GitHub Releases are being created. They are not included in the GitHub release download total.
+`downloads.json` remains a static fallback for Bluebird when GitHub's release API is temporarily unavailable.
 
 ## Site development
 
@@ -27,4 +30,4 @@ npm run dev
 npm run build
 ```
 
-The site is built with React and Vite. GitHub Pages uses the `react-pages` branch.
+The site is built with React and Vite. GitHub Pages uses the `react-pages` branch. `npm run build` writes the root entry, route entry points, assets, and the SPA fallback used by unknown paths.
