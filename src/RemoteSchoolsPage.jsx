@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import ThemeToggle from './components/ThemeToggle.jsx';
+import { detectVisitorDevice } from './device-detection.js';
+import { useNavigationDismissal } from './useNavigationDismissal.js';
 
 const releasesEndpoint = 'https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases';
 
 function RemoteSchoolsHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  useNavigationDismissal(menuOpen, closeMenu, '.remote-header');
 
   return (
     <header className="remote-header">
@@ -13,23 +16,24 @@ function RemoteSchoolsHeader() {
         <span className="remote-brand-mark" aria-hidden="true">R</span>
         <span>Remote Schools</span>
       </a>
-      <div className="remote-header-actions">
-        <ThemeToggle />
-        <button
-          className="remote-menu-toggle"
-          type="button"
-          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span></span><span></span>
-        </button>
-      </div>
-      <nav className={`remote-nav ${menuOpen ? 'remote-nav--open' : ''}`} aria-label="Remote Schools navigation">
+      <nav id="remote-navigation" className={`remote-nav ${menuOpen ? 'remote-nav--open' : ''}`} aria-label="Remote Schools navigation">
         <a href="#overview" onClick={closeMenu}>Overview</a>
         <a href="#features" onClick={closeMenu}>Features</a>
         <a className="remote-nav-cta" href="#downloads" onClick={closeMenu}>Downloads <span aria-hidden="true">↓</span></a>
       </nav>
+      <div className="remote-header-actions">
+        <ThemeToggle />
+        <button
+          className={`remote-menu-toggle ${menuOpen ? 'is-open' : ''}`}
+          type="button"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-controls="remote-navigation"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+      </div>
     </header>
   );
 }
@@ -104,6 +108,7 @@ function DownloadSkeleton() {
 export default function RemoteSchoolsPage() {
   const [status, setStatus] = useState('loading');
   const [release, setRelease] = useState(null);
+  const [device] = useState(detectVisitorDevice);
 
   useEffect(() => {
     document.title = 'Remote Schools — Uganda curriculum learning';
@@ -127,6 +132,23 @@ export default function RemoteSchoolsPage() {
   const publishedDate = release?.date
     ? new Date(release.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     : null;
+  const deviceName = device === 'android' ? 'Android' : device === 'windows' ? 'Windows' : 'Web browser';
+  const deviceAsset = device === 'android' ? release?.apk : device === 'windows' ? release?.exe : null;
+  const primaryAction = device === 'web'
+    ? { label: 'Open the web app', href: 'https://remoteschools.dpdns.org', icon: '↗', external: true }
+    : deviceAsset
+      ? {
+          label: device === 'android' ? 'Download Android APK' : 'Download Windows EXE',
+          href: deviceAsset.browser_download_url,
+          icon: '↓',
+          external: false
+        }
+      : {
+          label: device === 'android' ? 'Check Android APK' : 'Check Windows EXE',
+          href: '#downloads',
+          icon: '↓',
+          external: false
+        };
 
   return (
     <div className="portfolio-shell remote-shell">
@@ -137,9 +159,16 @@ export default function RemoteSchoolsPage() {
             <p className="portfolio-eyebrow">Learning platform · Uganda</p>
             <h1>Learning that<br /><span>can keep going.</span></h1>
             <p className="portfolio-lede">Remote Schools brings curriculum-aligned lessons, examples, and practice to learners, including when a reliable internet connection is not available.</p>
+            <p className="remote-device-hint"><span className="remote-device-dot" aria-hidden="true"></span> Device detected: <strong>{deviceName}</strong></p>
             <div className="portfolio-actions">
-              <a className="portfolio-button portfolio-button-primary" href="https://remoteschools.dpdns.org" target="_blank" rel="noreferrer">Open the web app <span aria-hidden="true">↗</span></a>
-              <a className="portfolio-text-link" href="#downloads">Get the apps <span aria-hidden="true">↓</span></a>
+              <a
+                className="portfolio-button portfolio-button-primary"
+                href={primaryAction.href}
+                {...(primaryAction.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+              >
+                {primaryAction.label} <span aria-hidden="true">{primaryAction.icon}</span>
+              </a>
+              <a className="portfolio-text-link" href="#downloads">View all options <span aria-hidden="true">↓</span></a>
             </div>
             <div className="portfolio-meta"><span>Uganda P1–S4 curriculum</span><span>Offline support</span><span>Android and Windows</span></div>
           </div>

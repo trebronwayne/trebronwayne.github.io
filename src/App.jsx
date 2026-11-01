@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import supporterSnapshot from './supportersSnapshot.json';
 import { SiteLink } from './site-router.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
+import { useNavigationDismissal } from './useNavigationDismissal.js';
 
 const asset = (path) => `/${path.replace(/^\/+/, '')}`;
 const releaseRepo = 'https://github.com/trebronwayne/trebronwayne.github.io';
@@ -270,6 +271,7 @@ function BluebirdPage({ page = 'home' }) {
   }, [page]);
 
   const closeMenu = () => setMenuOpen(false);
+  useNavigationDismissal(menuOpen, closeMenu, '.site-header');
   const shareBluebird = async () => {
     const shareUrl = 'https://trebronwayne.github.io/bluebird';
     const shareData = {
@@ -314,11 +316,7 @@ function BluebirdPage({ page = 'home' }) {
           <span className="brand-mark"><img src={asset('assets/img/logo_1.png')} alt="" /></span>
           <span><strong>Bluebird</strong><small>Android launcher</small></span>
         </SiteLink>
-        <button className="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
-          <span></span><span></span>
-        </button>
-        <div className="bluebird-theme-toggle"><ThemeToggle /></div>
-        <nav className={menuOpen ? 'site-nav open' : 'site-nav'} aria-label="Main navigation">
+        <nav id="bluebird-navigation" className={menuOpen ? 'site-nav open' : 'site-nav'} aria-label="Main navigation">
           <SiteLink to="/bluebird/home" onClick={closeMenu}>Home</SiteLink>
           <SiteLink to="/bluebird/releases" onClick={closeMenu}>Releases</SiteLink>
           <SiteLink to="/bluebird/about" onClick={closeMenu}>About</SiteLink>
@@ -326,6 +324,19 @@ function BluebirdPage({ page = 'home' }) {
           <a href={sourceRepo} target="_blank" rel="noreferrer" onClick={closeMenu}>Source</a>
           <a className="nav-download" href={latestRelease.downloadUrl || latestRelease.fallbackUrl || latestRelease.releaseUrl} download={!latestRelease.downloadUrl && Boolean(latestRelease.fallbackUrl)} onClick={closeMenu}>{latestRelease.downloadUrl || latestRelease.fallbackUrl ? 'Download APK' : 'View latest release'}</a>
         </nav>
+        <div className="site-header-actions">
+          <div className="bluebird-theme-toggle"><ThemeToggle /></div>
+          <button
+            className={`menu-toggle ${menuOpen ? 'is-open' : ''}`}
+            type="button"
+            aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+            aria-controls="bluebird-navigation"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
       </header>
 
       <main>

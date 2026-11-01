@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { SiteLink } from './site-router.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
+import { useNavigationDismissal } from './useNavigationDismissal.js';
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  useNavigationDismissal(menuOpen, closeMenu, '.portfolio-header');
 
   return (
     <header className="portfolio-header">
@@ -12,24 +14,25 @@ export function SiteHeader() {
         <span className="portfolio-brand-mark" aria-hidden="true">N</span>
         <span>Nobert</span>
       </SiteLink>
-      <div className="portfolio-header-actions">
-        <ThemeToggle />
-        <button
-          className="portfolio-menu-toggle"
-          type="button"
-          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span></span><span></span>
-        </button>
-      </div>
-      <nav className={`portfolio-nav ${menuOpen ? 'portfolio-nav--open' : ''}`} aria-label="Main navigation">
+      <nav id="portfolio-navigation" className={`portfolio-nav ${menuOpen ? 'portfolio-nav--open' : ''}`} aria-label="Main navigation">
         <SiteLink to="/#projects" onClick={closeMenu}>Projects</SiteLink>
         <SiteLink to="/bluebird" onClick={closeMenu}>Bluebird</SiteLink>
         <SiteLink to="/remote-schools" onClick={closeMenu}>Remote Schools</SiteLink>
         <SiteLink to="/cv" onClick={closeMenu}>CV</SiteLink>
       </nav>
+      <div className="portfolio-header-actions">
+        <ThemeToggle />
+        <button
+          className={`portfolio-menu-toggle ${menuOpen ? 'is-open' : ''}`}
+          type="button"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-controls="portfolio-navigation"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+      </div>
     </header>
   );
 }
