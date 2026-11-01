@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BluebirdPage from './App.jsx';
 import CvPage from './CvPage.jsx';
-import PortfolioPage from './PortfolioPage.jsx';
+import PortfolioPage, { SiteFooter, SiteHeader } from './PortfolioPage.jsx';
 import RemoteSchoolsPage from './RemoteSchoolsPage.jsx';
 import { NavigationProvider, SiteLink } from './site-router.jsx';
 
@@ -13,25 +13,14 @@ function normalizePath(pathname) {
 function NotFoundPage() {
   return (
     <div className="portfolio-shell">
-      <header className="portfolio-header">
-        <SiteLink className="portfolio-brand" to="/">
-          <span className="portfolio-brand-mark" aria-hidden="true">N</span>
-          <span>Nobert</span>
-        </SiteLink>
-        <nav className="portfolio-nav" aria-label="Main navigation">
-          <SiteLink to="/">Portfolio</SiteLink>
-          <SiteLink to="/bluebird">Bluebird</SiteLink>
-          <SiteLink to="/remote-schools">Remote Schools</SiteLink>
-          <SiteLink to="/cv">CV</SiteLink>
-        </nav>
-      </header>
+      <SiteHeader />
       <main className="portfolio-main not-found">
         <p className="portfolio-eyebrow">404 · Page not found</p>
         <h1>This page isn’t here.</h1>
         <p>Check the address, or return to the portfolio.</p>
         <SiteLink className="portfolio-button portfolio-button-primary" to="/">Go to portfolio</SiteLink>
       </main>
-      <footer className="portfolio-footer"><span>© {new Date().getFullYear()} Nobert</span></footer>
+      <SiteFooter />
     </div>
   );
 }

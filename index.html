@@ -3,17 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7f8fa" />
+    <meta name="theme-color" content="#0b0c0e" />
     <meta name="description" content="Portfolio, CV, and selected software projects by Nobert." />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Nobert — Developer portfolio" />
-    <meta property="og:description" content="Selected software projects, skills, and CV for Nobert." />
+    <meta property="og:description" content="Portfolio, CV, and selected software projects by Nobert." />
 
     <meta property="og:site_name" content="Nobert" />
     <title>Nobert — Developer portfolio</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <script type="module" crossorigin src="/assets/index-D_QLtz5J.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BqjU0lSX.css">
+      <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('site-theme');
+          const theme = saved === 'dark' || saved === 'light'
+            ? saved
+            : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0b0c0e' : '#f3f5f7');
+        } catch {
+          document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-D-C4blL5.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BIVpT3WU.css">
     <link rel="canonical" href="https://trebronwayne.github.io/" />
   </head>
   <body>

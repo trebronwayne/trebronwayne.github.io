@@ -3,6 +3,7 @@ import { cpSync, copyFileSync, mkdirSync, readFileSync, readdirSync, statSync, w
 
 const template = Buffer.from(readFileSync('site.template.b64', 'utf8').trim(), 'base64')
   .toString('utf8')
+  .replace('content="#f7f8fa"', 'content="#0b0c0e"')
   .replace('content="Official Bluebird Android launcher release information, APK downloads, installation instructions, and privacy details."', 'content="Portfolio, CV, and selected software projects by Nobert."')
   .replace('content="Bluebird — Android launcher releases"', 'content="Nobert — Developer portfolio"')
   .replace('content="Official release information and APK downloads for the Bluebird Android launcher."', 'content="Selected software projects, skills, and CV for Nobert."')
@@ -10,6 +11,22 @@ const template = Buffer.from(readFileSync('site.template.b64', 'utf8').trim(), '
   .replace('content="Bluebird" />', 'content="Nobert" />')
   .replace('<title>Bluebird — Android launcher releases</title>', '<title>Nobert — Developer portfolio</title>')
   .replace('<link rel="icon" type="image/png" href="assets/img/logo.png" />', '<link rel="icon" type="image/svg+xml" href="/favicon.svg" />')
+  .replace('</head>', `    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('site-theme');
+          const theme = saved === 'dark' || saved === 'light'
+            ? saved
+            : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0b0c0e' : '#f3f5f7');
+        } catch {
+          document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+      })();
+    </script>
+  </head>`)
   .replace(/[ \t]+$/gm, '');
 writeFileSync('index.html', template);
 
@@ -71,9 +88,17 @@ const routePages = [
 
 function pageHtml({ path, title, description }) {
   const canonicalPath = path === '/' ? '/' : `${path}/`;
+  const siteName = path === '/remote-schools'
+    ? 'Remote Schools'
+    : path.startsWith('/bluebird')
+      ? 'Bluebird'
+      : 'Nobert';
   return readFileSync(builtIndex, 'utf8')
     .replace('<title>Nobert — Developer portfolio</title>', `<title>${title}</title>`)
     .replace('content="Portfolio, CV, and selected software projects by Nobert."', `content="${description}"`)
+    .replace('content="Nobert — Developer portfolio"', `content="${title}"`)
+    .replace('content="Selected software projects, skills, and CV for Nobert."', `content="${description}"`)
+    .replace('content="Nobert" />', `content="${siteName}" />`)
     .replace('</head>', `  <link rel="canonical" href="https://trebronwayne.github.io${canonicalPath}" />\n  </head>`);
 }
 

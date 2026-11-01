@@ -1,8 +1,52 @@
 import { useEffect, useState } from 'react';
-import { SiteFooter, SiteHeader } from './PortfolioPage.jsx';
-import { SiteLink } from './site-router.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx';
 
 const releasesEndpoint = 'https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases';
+
+function RemoteSchoolsHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
+  return (
+    <header className="remote-header">
+      <a className="remote-brand" href="#overview" aria-label="Remote Schools overview" onClick={closeMenu}>
+        <span className="remote-brand-mark" aria-hidden="true">R</span>
+        <span>Remote Schools</span>
+      </a>
+      <div className="remote-header-actions">
+        <ThemeToggle />
+        <button
+          className="remote-menu-toggle"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span></span><span></span>
+        </button>
+      </div>
+      <nav className={`remote-nav ${menuOpen ? 'remote-nav--open' : ''}`} aria-label="Remote Schools navigation">
+        <a href="#overview" onClick={closeMenu}>Overview</a>
+        <a href="#features" onClick={closeMenu}>Features</a>
+        <a className="remote-nav-cta" href="#downloads" onClick={closeMenu}>Downloads <span aria-hidden="true">↓</span></a>
+      </nav>
+    </header>
+  );
+}
+
+function RemoteSchoolsFooter() {
+  return (
+    <footer className="remote-footer">
+      <a className="remote-footer-brand" href="#overview">Remote Schools</a>
+      <span>Learning support for Uganda’s curriculum</span>
+      <nav aria-label="Footer navigation">
+        <a href="#overview">Overview</a>
+        <a href="#features">Features</a>
+        <a href="#downloads">Downloads</a>
+      </nav>
+    </footer>
+  );
+}
 
 function isRemoteSchoolsRelease(release) {
   const assets = Array.isArray(release.assets) ? release.assets : [];
@@ -86,9 +130,9 @@ export default function RemoteSchoolsPage() {
 
   return (
     <div className="portfolio-shell remote-shell">
-      <SiteHeader />
+      <RemoteSchoolsHeader />
       <main className="portfolio-main remote-main">
-        <section className="remote-hero">
+        <section className="remote-hero" id="overview">
           <div className="remote-hero-copy">
             <p className="portfolio-eyebrow">Learning platform · Uganda</p>
             <h1>Learning that<br /><span>can keep going.</span></h1>
@@ -106,7 +150,7 @@ export default function RemoteSchoolsPage() {
           </aside>
         </section>
 
-        <section className="remote-content-grid">
+        <section className="remote-content-grid" id="features">
           <article>
             <p className="portfolio-eyebrow">Curriculum-first</p>
             <h2>Made for Uganda’s classrooms.</h2>
@@ -165,12 +209,8 @@ export default function RemoteSchoolsPage() {
           {release?.url && <p className="remote-release-note"><a href={release.url} target="_blank" rel="noreferrer">Release notes on GitHub ↗</a></p>}
         </section>
 
-        <section className="remote-project-link">
-          <div><p className="portfolio-eyebrow">Explore more</p><h2>Built alongside other practical tools.</h2></div>
-          <SiteLink className="portfolio-button portfolio-button-secondary" to="/">Back to portfolio <span aria-hidden="true">↗</span></SiteLink>
-        </section>
       </main>
-      <SiteFooter />
+      <RemoteSchoolsFooter />
     </div>
   );
 }

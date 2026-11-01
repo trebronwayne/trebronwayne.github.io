@@ -1,18 +1,34 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SiteLink } from './site-router.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx';
 
 export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header className="portfolio-header">
-      <SiteLink className="portfolio-brand" to="/">
+      <SiteLink className="portfolio-brand" to="/" onClick={closeMenu}>
         <span className="portfolio-brand-mark" aria-hidden="true">N</span>
         <span>Nobert</span>
       </SiteLink>
-      <nav className="portfolio-nav" aria-label="Main navigation">
-        <SiteLink to="/">Portfolio</SiteLink>
-        <SiteLink to="/bluebird">Bluebird</SiteLink>
-        <SiteLink to="/remote-schools">Remote Schools</SiteLink>
-        <SiteLink to="/cv">CV</SiteLink>
+      <div className="portfolio-header-actions">
+        <ThemeToggle />
+        <button
+          className="portfolio-menu-toggle"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span></span><span></span>
+        </button>
+      </div>
+      <nav className={`portfolio-nav ${menuOpen ? 'portfolio-nav--open' : ''}`} aria-label="Main navigation">
+        <SiteLink to="/#projects" onClick={closeMenu}>Projects</SiteLink>
+        <SiteLink to="/bluebird" onClick={closeMenu}>Bluebird</SiteLink>
+        <SiteLink to="/remote-schools" onClick={closeMenu}>Remote Schools</SiteLink>
+        <SiteLink to="/cv" onClick={closeMenu}>CV</SiteLink>
       </nav>
     </header>
   );

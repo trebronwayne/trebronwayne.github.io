@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import supporterSnapshot from './supportersSnapshot.json';
 import { SiteLink } from './site-router.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx';
 
 const asset = (path) => `/${path.replace(/^\/+/, '')}`;
 const releaseRepo = 'https://github.com/trebronwayne/trebronwayne.github.io';
@@ -316,6 +317,7 @@ function BluebirdPage({ page = 'home' }) {
         <button className="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           <span></span><span></span>
         </button>
+        <div className="bluebird-theme-toggle"><ThemeToggle /></div>
         <nav className={menuOpen ? 'site-nav open' : 'site-nav'} aria-label="Main navigation">
           <SiteLink to="/bluebird/home" onClick={closeMenu}>Home</SiteLink>
           <SiteLink to="/bluebird/releases" onClick={closeMenu}>Releases</SiteLink>
