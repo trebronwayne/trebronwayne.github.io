@@ -10,6 +10,8 @@ const sourceRepo = 'https://github.com/trebronwayne/bluebird';
 const sourceApi = 'https://api.github.com/repos/trebronwayne/bluebird';
 const releasesUrl = releaseRepo + '/releases';
 const fallbackLatestVersion = '2.4';
+const uptodownUrl = 'https://bluebird-desktop-pc-launcher.en.uptodown.com/android';
+const uptodownBadgeUrl = 'https://stc.utdstc.com/img/mediakit/download-aao-small-w.png';
 
 const releases = [
   {
@@ -38,16 +40,14 @@ const releases = [
     status: 'Previous',
     note: 'Latest improvements and fixes',
     date: 'September 2026',
-    releaseUrl: releasesUrl + '/tag/v2.1',
-    fallbackUrl: asset('assets/apks/Bluebird-v2.1.apk')
+    releaseUrl: releasesUrl + '/tag/v2.1'
   },
   {
     version: '2.0',
     status: 'Previous',
     note: 'Desktop-style launcher, refreshed',
     date: 'August 2026',
-    releaseUrl: releasesUrl + '/tag/v2.0',
-    fallbackUrl: asset('assets/apks/Bluebird-v2.0.apk')
+    releaseUrl: releasesUrl + '/tag/v2.0'
   }
 ];
 
@@ -69,12 +69,25 @@ function Arrow() {
   return <span aria-hidden="true">↗</span>;
 }
 
-function DownloadButton({ release, secondary = false }) {
-  const hasApk = Boolean(release.downloadUrl || release.fallbackUrl);
-  const href = release.downloadUrl || release.fallbackUrl || release.releaseUrl;
+function DownloadButton({ secondary = false }) {
   return (
-    <a className={'button ' + (secondary ? 'button-secondary' : 'button-primary')} href={href} download={!release.downloadUrl && Boolean(release.fallbackUrl)}>
-      {hasApk ? 'Download APK' : 'View release'} <Arrow />
+    <a className={'button ' + (secondary ? 'button-secondary' : 'button-primary')} href={uptodownUrl} target="_blank" rel="noopener noreferrer">
+      Download on Uptodown <Arrow />
+    </a>
+  );
+}
+
+function UptodownBadge() {
+  return (
+    <a
+      className="uptodown-badge"
+      href={uptodownUrl}
+      title="Download Bluebird - Desktop PC Launcher"
+      aria-label="Download Bluebird - Desktop PC Launcher from Uptodown"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img src={uptodownBadgeUrl} alt="Download Bluebird - Desktop PC Launcher" loading="lazy" />
     </a>
   );
 }
@@ -154,7 +167,8 @@ function buildSupporterMembers(stargazers, issueRecords) {
 
 function BluebirdPage({ page = 'home' }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [downloadData, setDownloadData] = useState(null);
+  const [releaseInfo, setReleaseInfo] = useState([]);
+  const [manualUserTotal, setManualUserTotal] = useState(998);
   const [siteViews, setSiteViews] = useState(null);
   const [showPreviousReleases, setShowPreviousReleases] = useState(false);
   const [supporterData, setSupporterData] = useState(() => ({
@@ -176,7 +190,7 @@ function BluebirdPage({ page = 'home' }) {
       home: 'Bluebird is a desktop-style Android launcher with floating windows, a taskbar, and built-in applications.',
       about: 'Explore Bluebird features, screenshots, and privacy information.',
       support: 'Installation steps and community support for the Bluebird Android launcher.',
-      releases: 'Bluebird Android APK releases, version history, and download information.'
+      releases: 'Bluebird release history and Uptodown downloads for the Android launcher.'
     };
     document.title = pageTitles[page] || pageTitles.home;
     const description = document.querySelector('meta[name="description"]');
@@ -210,43 +224,36 @@ function BluebirdPage({ page = 'home' }) {
         .catch(() => {});
     }, 1500);
 
-    const fallback = fetch(asset('downloads.json'), { cache: 'no-store' })
+    fetch(asset('downloads.json'), { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : null)
-      .catch(() => null);
+      .then((data) => {
+        const count = Number(data?.totalUsers);
+        if (Number.isSafeInteger(count) && count >= 0) setManualUserTotal(count);
+      })
+      .catch(() => {});
+
     fetch('https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases?per_page=100', { headers: { Accept: 'application/vnd.github+json' } })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('GitHub release data unavailable')))
       .then((githubReleases) => {
-        const releaseData = githubReleases
+        const apiReleases = githubReleases
           .filter((release) => !release.draft && !release.prerelease)
           .map((release) => {
           const assets = release.assets || [];
           const isBluebird = /bluebird/i.test([release.name, release.tag_name, ...assets.map((item) => item.name)].filter(Boolean).join(' '));
-          const apkAssets = assets.filter((item) => /\.apk$/i.test(item.name || ''));
-          if (!isBluebird || apkAssets.length === 0) return null;
+          if (!isBluebird) return null;
           return {
             version: (release.tag_name || '').replace(/^v/i, ''),
             status: 'Previous',
             date: new Date(release.published_at || release.created_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }),
-            downloads: apkAssets.reduce((total, item) => total + item.download_count, 0),
-            downloadUrl: apkAssets[0]?.browser_download_url,
             releaseUrl: release.html_url,
             publishedAt: release.published_at || release.created_at
           };
         })
           .filter(Boolean)
           .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-        if (releaseData.length > 0) {
-          setDownloadData({
-            status: 'live',
-            totalApkDownloads: releaseData.reduce((total, release) => total + release.downloads, 0),
-            updatedAt: new Date().toISOString(),
-            releases: releaseData
-          });
-        } else {
-          return fallback.then((data) => setDownloadData(data));
-        }
+        if (apiReleases.length > 0) setReleaseInfo(apiReleases);
       })
-      .catch(() => fallback.then((data) => setDownloadData(data)));
+      .catch(() => {});
 
     return () => window.clearTimeout(viewTimer);
   }, []);
@@ -294,20 +301,17 @@ function BluebirdPage({ page = 'home' }) {
       if (error?.name !== 'AbortError') setShareMessage('Copy this link to share Bluebird: ' + shareUrl);
     }
   };
-  const releaseData = downloadData?.releases || [];
   const mergedReleases = useMemo(() => {
-    if (releaseData.length > 0) {
-      return releaseData.map((release, index) => ({
+    if (releaseInfo.length > 0) {
+      return releaseInfo.map((release, index) => ({
         ...release,
         status: index === 0 ? 'Latest' : 'Previous'
       }));
     }
     return releases;
-  }, [releaseData]);
+  }, [releaseInfo]);
   const latestRelease = mergedReleases[0] || releases[0];
   const latestVersion = latestRelease?.version || fallbackLatestVersion;
-  const totalDownloads = downloadData?.totalApkDownloads;
-  const updatedDate = downloadData?.updatedAt ? new Date(downloadData.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
 
   return (
     <div className="site-shell">
@@ -322,7 +326,7 @@ function BluebirdPage({ page = 'home' }) {
           <SiteLink to="/bluebird/about" onClick={closeMenu}>About</SiteLink>
           <SiteLink to="/bluebird/support" onClick={closeMenu}>Support</SiteLink>
           <a href={sourceRepo} target="_blank" rel="noreferrer" onClick={closeMenu}>Source</a>
-          <a className="nav-download" href={latestRelease.downloadUrl || latestRelease.fallbackUrl || latestRelease.releaseUrl} download={!latestRelease.downloadUrl && Boolean(latestRelease.fallbackUrl)} onClick={closeMenu}>{latestRelease.downloadUrl || latestRelease.fallbackUrl ? 'Download APK' : 'View latest release'}</a>
+          <a className="nav-download" href={uptodownUrl} target="_blank" rel="noopener noreferrer" onClick={closeMenu}>Download on Uptodown</a>
         </nav>
         <div className="site-header-actions">
           <div className="bluebird-theme-toggle"><ThemeToggle /></div>
@@ -346,7 +350,7 @@ function BluebirdPage({ page = 'home' }) {
             <h1>Bluebird for <span>Android.</span></h1>
             <p className="hero-lede">A desktop-style Android launcher with floating windows, a taskbar, and built-in applications.</p>
             <div className="hero-actions">
-              <DownloadButton release={latestRelease} />
+              <UptodownBadge />
               <SiteLink className="text-link" to="/bluebird/releases">View release history <Arrow /></SiteLink>
             </div>
             <div className="hero-meta"><span>Latest v{latestVersion}</span><i></i><span>Android 8.0+</span><i></i><span>No root required</span></div>
@@ -362,7 +366,7 @@ function BluebirdPage({ page = 'home' }) {
         {page === 'home' && <section className="stats section-compact" aria-label="Release information">
           <div><strong>v{latestVersion}</strong><span>Latest release</span></div>
           <div><strong>26+</strong><span>Android API</span></div>
-          <div><strong>{totalDownloads === undefined ? <span className="bluebird-skeleton" aria-hidden="true"></span> : formatNumber(totalDownloads)}</strong><span>Total APK downloads</span></div>
+          <div><strong>{formatNumber(manualUserTotal)}</strong><span>Total users across channels</span></div>
           <div><strong>0</strong><span>Root permissions</span></div>
           <div><strong>{siteViews === null ? <span className="bluebird-skeleton" aria-hidden="true"></span> : formatNumber(siteViews)}</strong><span>Site views</span></div>
         </section>}
@@ -374,7 +378,7 @@ function BluebirdPage({ page = 'home' }) {
             <p className="section-intro">A desktop-style Android launcher with floating windows, a taskbar, and built-in applications.</p>
           </div>
           <div className="bluebird-latest-actions">
-            <DownloadButton release={latestRelease} />
+            <DownloadButton />
             <SiteLink className="text-link" to="/bluebird/releases">View all releases <Arrow /></SiteLink>
           </div>
         </section>}
@@ -382,26 +386,25 @@ function BluebirdPage({ page = 'home' }) {
         {page === 'releases' && <section className="section release-section" id="releases">
           <div className="section-heading">
             <div><p className="kicker">Release history</p><h2>Available <span>releases.</span></h2></div>
-            <p className="section-intro">APK files and release information for Bluebird. Download counts are provided by GitHub release assets.</p>
+            <p className="section-intro">Browse Bluebird release history and get the app from its official Uptodown store page.</p>
           </div>
           <div className="release-summary">
-            <div><span className="summary-label">Total APK downloads</span><strong>{totalDownloads === undefined ? <span className="bluebird-skeleton" aria-hidden="true"></span> : formatNumber(totalDownloads)}</strong><span className="summary-detail">{updatedDate ? 'Updated ' + updatedDate : 'Download data pending first release sync'}</span></div>
+            <div><span className="summary-label">Total users across channels</span><strong>{formatNumber(manualUserTotal)}</strong><span className="summary-detail">Manually reported across all distribution channels</span></div>
             <div><span className="summary-label">Latest version</span><strong>v{latestVersion}</strong><span className="summary-detail">Android 8.0 or later · No root access</span></div>
           </div>
-          <div className="release-table" role="table" aria-label="Bluebird releases">
-            <div className="release-table-head" role="row"><span>Version</span><span>Release date</span><span>Status</span><span>Downloads</span><span aria-label="Actions"></span></div>
+          <div className="release-table" role="table" aria-label="Bluebird release history">
+            <div className="release-table-head" role="row"><span>Version</span><span>Release date</span><span>Status</span><span aria-label="Actions"></span></div>
             {(showPreviousReleases ? mergedReleases : mergedReleases.slice(0, 1)).map((release) => <div className="release-row" role="row" key={release.version}>
               <strong>v{release.version}</strong>
               <span>{release.date}</span>
               <span><b className={release.version === latestVersion ? 'status-latest' : 'status-previous'}>{release.status}</b></span>
-              <span className="release-count">{release.downloads === undefined ? '—' : formatNumber(release.downloads)}</span>
-              <span className="release-actions"><a href={release.downloadUrl || release.fallbackUrl || release.releaseUrl} download={!release.downloadUrl && Boolean(release.fallbackUrl)}>{release.downloadUrl || release.fallbackUrl ? 'Download' : 'APK pending'}</a><a href={release.releaseUrl} target="_blank" rel="noreferrer">Notes</a></span>
+              <span className="release-actions"><a href={uptodownUrl} target="_blank" rel="noopener noreferrer">Get on Uptodown</a><a href={release.releaseUrl} target="_blank" rel="noreferrer">Notes</a></span>
             </div>)}
           </div>
           <button className="release-toggle" type="button" aria-expanded={showPreviousReleases} onClick={() => setShowPreviousReleases(!showPreviousReleases)}>
             {showPreviousReleases ? 'Hide previous versions' : 'Show previous versions'} <span aria-hidden="true">{showPreviousReleases ? '−' : '+'}</span>
           </button>
-          <p className="data-note">Download counts are asset-download totals, not unique users or installations. <a href={releaseRepo + '/releases'} target="_blank" rel="noreferrer">View releases on GitHub <Arrow /></a></p>
+          <p className="data-note">The 998 figure is a manually reported total of users across all distribution channels, not an automated download counter. <a href={releaseRepo + '/releases'} target="_blank" rel="noreferrer">View release notes on GitHub <Arrow /></a></p>
         </section>}
 
         {page === 'about' && <section className="section showcase" id="showcase">
@@ -462,14 +465,14 @@ function BluebirdPage({ page = 'home' }) {
         {page === 'support' && <section className="section docs-section" id="installation">
           <div className="docs-panel">
             <div className="section-heading"><div><p className="kicker">Installation</p><h2>Install <span>Bluebird.</span></h2></div><p className="section-intro">Download the APK, install it on an Android device, and select Bluebird as the default home application.</p></div>
-            <div className="steps"><div><b>01</b><strong>Download the APK</strong><p>Choose a version from <SiteLink to="/bluebird/releases">Bluebird releases</SiteLink>.</p></div><div><b>02</b><strong>Install the package</strong><p>Use the file manager or install with ADB.</p></div><div><b>03</b><strong>Select the home app</strong><p>Settings → Apps → Default Apps → Home App → Bluebird.</p></div></div>
+            <div className="steps"><div><b>01</b><strong>Get the APK</strong><p><a href={uptodownUrl} target="_blank" rel="noopener noreferrer">Download Bluebird from Uptodown</a>.</p></div><div><b>02</b><strong>Install the package</strong><p>Use the file manager or install with ADB.</p></div><div><b>03</b><strong>Select the home app</strong><p>Settings → Apps → Default Apps → Home App → Bluebird.</p></div></div>
             <div className="code-line"><span>adb install Bluebird-v{latestVersion}.apk</span><button type="button" onClick={() => navigator.clipboard?.writeText('adb install Bluebird-v' + latestVersion + '.apk')}>Copy</button></div>
           </div>
         </section>}
 
         {page === 'about' && <section className="legal section-compact" id="privacy">
           <div><p className="kicker">Privacy</p><h2>Privacy and<br /><span>data handling.</span></h2></div>
-          <p>Bluebird does not collect personal data or telemetry from inside the application. Files, settings, and application data remain on the device. This release site uses GoatCounter and Google Analytics to measure visits; downloads and visits to GitHub are subject to their respective privacy policies.</p>
+          <p>Bluebird does not collect personal data or telemetry from inside the application. Files, settings, and application data remain on the device. This release site uses GoatCounter and Google Analytics to measure visits; app downloads are handled by Uptodown and are subject to its privacy policy.</p>
         </section>}
       </main>
 

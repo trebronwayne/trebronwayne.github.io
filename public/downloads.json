@@ -1,4 +1,5 @@
 {
-  "status": "pending",
-  "releases": []
+  "status": "manual",
+  "totalUsers": 998,
+  "note": "Combined user total reported across all distribution channels."
 }

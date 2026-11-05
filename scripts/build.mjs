@@ -72,7 +72,7 @@ const routePages = [
   {
     path: '/bluebird/releases',
     title: 'Bluebird releases',
-    description: 'Bluebird Android APK releases, version history, and download information.'
+    description: 'Bluebird release history and Uptodown downloads for the Android launcher.'
   },
   {
     path: '/remote-schools',

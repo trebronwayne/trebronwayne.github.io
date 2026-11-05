@@ -11,16 +11,13 @@ This repository publishes the portfolio at `https://trebronwayne.github.io/`, wi
 
 The build creates static entry points for each route so GitHub Pages serves direct links and refreshes without a client-side 404.
 
-## GitHub releases
+## Release information and downloads
 
-Bluebird and Remote Schools releases are published from this public repository. The pages read release assets from the GitHub API at runtime; no site rebuild is needed when a release is published.
+Bluebird's release history reads public release metadata from this repository. All Bluebird download links and the official Uptodown badge point to the Uptodown store page. The combined user total is manually maintained in `public/downloads.json`; update `totalUsers` there when the reported total changes.
 
-- Bluebird releases are matched by their Bluebird release or asset names. Only Bluebird APK assets contribute to Bluebird's download totals.
-- Remote Schools releases are matched by a release or asset name containing “Remote Schools”, or by the `v1.0.x` tag series. Attach `.apk` and `.exe` assets to the published release.
+- Bluebird's displayed total is a manually reported user count across distribution channels, not an automated download, installation, or active-device counter.
+- Remote Schools releases are matched by their Remote Schools release or asset names, or by the `v1.0.x` tag series. Attach `.apk` and `.exe` assets to the published release.
 - The first Remote Schools tag is expected to be `v1.0.26`. A clear release title such as `Remote Schools v1.0.26` and filenames such as `RemoteSchools-v1.0.26.apk` and `RemoteSchools-v1.0.26.exe` make the release unambiguous.
-- The displayed download counts are asset-download totals, not unique users, installations, or active devices.
-
-`downloads.json` remains a static fallback for Bluebird when GitHub's release API is temporarily unavailable.
 
 ## Site development
 

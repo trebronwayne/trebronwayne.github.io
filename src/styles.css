@@ -95,6 +95,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
 .button-primary:hover { background: var(--accent-hover); }
 .button-secondary { border: 1px solid var(--line); background: var(--surface); }
 .button span, .text-link span, .release-actions span, .data-note span { color: var(--blue); font-size: 16px; line-height: 0; }
+.uptodown-badge { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; border: 1px solid var(--line); border-radius: var(--fluent-radius); background: #17191d; transition: border-color .16s ease, transform .16s ease; }
+.uptodown-badge img { display: block; width: 150px; max-width: 100%; height: auto; }
+.uptodown-badge:hover { border-color: var(--blue); transform: translateY(-1px); }
 .text-link { color: var(--muted); font-size: 13px; font-weight: 600; }
 .hero-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 45px; color: var(--muted-2); font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em; text-transform: uppercase; }
 .hero-meta i { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-2); }
@@ -119,7 +122,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
 .release-summary strong { font-size: 28px; font-weight: 700; letter-spacing: -.04em; }
 .summary-detail { color: var(--muted); font-size: 12px; }
 .release-table { border-top: 1px solid var(--line); background: var(--surface); }
-.release-table-head, .release-row { display: grid; grid-template-columns: 1.05fr 1.25fr 1fr .7fr 1.25fr; gap: 18px; align-items: center; padding: 0 20px; }
+.release-table-head, .release-row { display: grid; grid-template-columns: 1.05fr 1.25fr 1fr 1.7fr; gap: 18px; align-items: center; padding: 0 20px; }
 .release-table-head { min-height: 43px; color: var(--muted-2); font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .05em; text-transform: uppercase; background: var(--surface-2); }
 .release-row { min-height: 75px; border-bottom: 1px solid var(--line); font-size: 13px; }
 .release-row > span { color: var(--muted); }
@@ -211,7 +214,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
   .section-heading { display: block; }
   .section-intro { margin-top: 25px; }
   .release-table { overflow-x: auto; }
-  .release-table-head, .release-row { min-width: 720px; }
+   .release-table-head, .release-row { min-width: 620px; }
   .showcase-grid { grid-template-columns: 1fr 1fr; }
   .screenshot-card, .screenshot-card.featured { grid-column: span 1; grid-row: auto; }
   .screenshot-card.featured { grid-column: span 2; }
