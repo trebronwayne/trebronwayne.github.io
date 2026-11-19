@@ -78,16 +78,20 @@ function DownloadButton({ secondary = false }) {
 }
 
 function UptodownBadge() {
+  const [imageFailed, setImageFailed] = useState(false);
+
   return (
     <a
-      className="uptodown-badge"
+      className={`uptodown-badge ${imageFailed ? 'uptodown-badge--fallback' : ''}`}
       href={uptodownUrl}
       title="Download Bluebird - Desktop PC Launcher"
       aria-label="Download Bluebird - Desktop PC Launcher from Uptodown"
       target="_blank"
       rel="noopener noreferrer"
     >
-      <img src={uptodownBadgeUrl} alt="Download Bluebird - Desktop PC Launcher" loading="lazy" />
+      {imageFailed
+        ? <>Download on Uptodown <Arrow /></>
+        : <img src={uptodownBadgeUrl} alt="Download Bluebird - Desktop PC Launcher" loading="lazy" onError={() => setImageFailed(true)} />}
     </a>
   );
 }

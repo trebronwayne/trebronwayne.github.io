@@ -98,6 +98,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
 .uptodown-badge { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; border: 1px solid var(--line); border-radius: var(--fluent-radius); background: #17191d; transition: border-color .16s ease, transform .16s ease; }
 .uptodown-badge img { display: block; width: 150px; max-width: 100%; height: auto; }
 .uptodown-badge:hover { border-color: var(--blue); transform: translateY(-1px); }
+.uptodown-badge--fallback { gap: 8px; padding: 0 14px; color: #fff; font-size: 13px; font-weight: 700; }
+.uptodown-badge--fallback:hover { color: var(--on-accent); background: var(--blue); }
 .text-link { color: var(--muted); font-size: 13px; font-weight: 600; }
 .hero-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 45px; color: var(--muted-2); font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em; text-transform: uppercase; }
 .hero-meta i { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-2); }
