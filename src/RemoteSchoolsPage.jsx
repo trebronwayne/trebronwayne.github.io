@@ -3,7 +3,35 @@ import ThemeToggle from './components/ThemeToggle.jsx';
 import { detectVisitorDevice } from './device-detection.js';
 import { useNavigationDismissal } from './useNavigationDismissal.js';
 
-const releasesEndpoint = 'https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases';
+const releasesEndpoint = 'https://api.github.com/repos/trebronwayne/trebronwayne.github.io/releases?per_page=30';
+const webAppUrl = 'https://remoteschools.dpdns.org';
+
+const screenshots = [
+  {
+    src: '/assets/remote-schools/home-learning.png',
+    title: 'Daily learning',
+    description: 'Quick practice, reminders, and a class download for offline study.',
+    alt: 'Remote Schools home screen showing a daily question, sleep reminder, offline class download, and curriculum link.'
+  },
+  {
+    src: '/assets/remote-schools/curriculum-browser.png',
+    title: 'Browse the curriculum',
+    description: 'Choose a class and subject, then open lessons that are available offline.',
+    alt: 'Remote Schools curriculum browser showing S1 subjects and class navigation from P1 to S4.'
+  },
+  {
+    src: '/assets/remote-schools/library.png',
+    title: 'Books, notes & past papers',
+    description: 'Find study materials by level, subject, and type.',
+    alt: 'Remote Schools library showing books, notes, exams, and subject filters.'
+  },
+  {
+    src: '/assets/remote-schools/subjects-and-school.png',
+    title: 'Set up a learner profile',
+    description: 'Choose a class, school, region, and subjects.',
+    alt: 'Remote Schools settings page for a learner’s subjects, class, school, and region.'
+  }
+];
 
 function RemoteSchoolsHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,14 +40,15 @@ function RemoteSchoolsHeader() {
 
   return (
     <header className="remote-header">
-      <a className="remote-brand" href="#overview" aria-label="Remote Schools overview" onClick={closeMenu}>
+      <a className="remote-brand" href="#overview" aria-label="Remote Schools store" onClick={closeMenu}>
         <span className="remote-brand-mark" aria-hidden="true">R</span>
-        <span>Remote Schools</span>
+        <span><strong>Remote Schools</strong><small>Study store</small></span>
       </a>
       <nav id="remote-navigation" className={`remote-nav ${menuOpen ? 'remote-nav--open' : ''}`} aria-label="Remote Schools navigation">
         <a href="#overview" onClick={closeMenu}>Overview</a>
-        <a href="#features" onClick={closeMenu}>Features</a>
-        <a className="remote-nav-cta" href="#downloads" onClick={closeMenu}>Downloads <span aria-hidden="true">↓</span></a>
+        <a href="#screenshots" onClick={closeMenu}>Screenshots</a>
+        <a href="#features" onClick={closeMenu}>What’s inside</a>
+        <a className="remote-nav-cta" href="#downloads" onClick={closeMenu}>Get the app <span aria-hidden="true">↓</span></a>
       </nav>
       <div className="remote-header-actions">
         <ThemeToggle />
@@ -43,9 +72,9 @@ function RemoteSchoolsFooter() {
     <footer className="remote-footer">
       <a className="remote-footer-brand" href="#overview">Remote Schools</a>
       <span>Learning support for Uganda’s curriculum</span>
-      <nav aria-label="Footer navigation">
-        <a href="#overview">Overview</a>
-        <a href="#features">Features</a>
+      <nav aria-label="Remote Schools footer navigation">
+        <a href="#screenshots">Screenshots</a>
+        <a href="#features">What’s inside</a>
         <a href="#downloads">Downloads</a>
       </nav>
     </footer>
@@ -54,36 +83,26 @@ function RemoteSchoolsFooter() {
 
 function isRemoteSchoolsRelease(release) {
   const assets = Array.isArray(release.assets) ? release.assets : [];
-  const text = [release.name, release.tag_name, ...assets.map((asset) => asset.name)]
+  const releaseText = [release.name, release.tag_name, ...assets.map((asset) => asset.name)]
     .filter(Boolean)
     .join(' ');
-  const hasProductName = /remote[\s_-]?schools?/i.test(text);
-  const expectedVersionSeries = /^v?1\.0\.\d+$/i.test(release.tag_name || '');
-  return (hasProductName || expectedVersionSeries) &&
+  return /remote[\s_-]?schools?/i.test(releaseText) &&
     assets.some((asset) => /\.(apk|exe)$/i.test(asset.name || ''));
 }
 
 async function loadLatestRemoteSchoolsRelease() {
-  const releases = [];
-  let page = 1;
+  const response = await fetch(releasesEndpoint, {
+    headers: { Accept: 'application/vnd.github+json' },
+    cache: 'no-store'
+  });
+  if (!response.ok) throw new Error('Release information is temporarily unavailable.');
 
-  while (page <= 10) {
-    const response = await fetch(`${releasesEndpoint}?per_page=100&page=${page}`, {
-      headers: { Accept: 'application/vnd.github+json' }
-    });
-    if (!response.ok) throw new Error('Release information is temporarily unavailable.');
-
-    const pageItems = await response.json();
-    if (!Array.isArray(pageItems)) throw new Error('Unexpected release response.');
-    releases.push(...pageItems);
-    if (pageItems.length < 100) break;
-    page += 1;
-  }
+  const releases = await response.json();
+  if (!Array.isArray(releases)) throw new Error('Unexpected release response.');
 
   const match = releases
     .filter((release) => !release.draft && !release.prerelease && isRemoteSchoolsRelease(release))
     .sort((a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at))[0];
-
   if (!match) return null;
 
   const assets = match.assets || [];
@@ -96,13 +115,35 @@ async function loadLatestRemoteSchoolsRelease() {
   };
 }
 
+function formatSize(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '';
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 function DownloadSkeleton() {
   return (
-    <div className="download-skeletons" aria-label="Loading release downloads">
-      <span className="skeleton-block"></span>
-      <span className="skeleton-block"></span>
+    <div className="store-download-grid" aria-label="Loading app downloads">
+      <span className="store-download-skeleton"></span>
+      <span className="store-download-skeleton"></span>
     </div>
   );
+}
+
+function StoreDownload({ title, detail, asset, href, action, featured = false, external = false }) {
+  const className = `store-download ${featured ? 'store-download-featured' : ''} ${asset || href ? '' : 'store-download-unavailable'}`;
+  const content = (
+    <>
+      <span className="store-platform-copy">
+        <span className="store-platform-title">{title}</span>
+        <span className="store-platform-detail">{detail}</span>
+      </span>
+      <span className="store-platform-action">{action} <span aria-hidden="true">{asset || href ? '↓' : '·'}</span></span>
+    </>
+  );
+
+  return asset || href
+    ? <a className={className} href={asset?.browser_download_url || href} {...(external || asset ? { target: '_blank', rel: 'noreferrer' } : {})}>{content}</a>
+    : <div className={className} aria-disabled="true">{content}</div>;
 }
 
 export default function RemoteSchoolsPage() {
@@ -111,9 +152,9 @@ export default function RemoteSchoolsPage() {
   const [device] = useState(detectVisitorDevice);
 
   useEffect(() => {
-    document.title = 'Remote Schools — Uganda curriculum learning';
+    document.title = 'Remote Schools — Uganda curriculum learning app';
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.content = 'Remote Schools is an e-learning platform for Uganda’s curriculum, with offline support and desktop and Android downloads.';
+    if (description) description.content = 'Explore Remote Schools: Uganda curriculum lessons, books, practice, past papers, and app downloads for offline study.';
 
     let active = true;
     loadLatestRemoteSchoolsRelease()
@@ -129,115 +170,155 @@ export default function RemoteSchoolsPage() {
     return () => { active = false; };
   }, []);
 
+  const deviceName = device === 'android' ? 'Android phone' : device === 'windows' ? 'Windows PC' : 'Web browser';
+  const deviceAsset = device === 'android' ? release?.apk : device === 'windows' ? release?.exe : null;
+  const primaryAction = deviceAsset
+    ? {
+        label: device === 'android' ? 'Download for Android' : 'Download for Windows',
+        href: deviceAsset.browser_download_url,
+        detail: `${release.tag} · ${formatSize(deviceAsset.size)}`,
+        external: true
+      }
+    : {
+        label: 'Open the web app',
+        href: webAppUrl,
+        detail: device === 'web' ? 'Use it in your browser' : 'Install files will appear here when published',
+        external: true
+      };
   const publishedDate = release?.date
     ? new Date(release.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     : null;
-  const deviceName = device === 'android' ? 'Android' : device === 'windows' ? 'Windows' : 'Web browser';
-  const deviceAsset = device === 'android' ? release?.apk : device === 'windows' ? release?.exe : null;
-  const primaryAction = device === 'web'
-    ? { label: 'Open the web app', href: 'https://remoteschools.dpdns.org', icon: '↗', external: true }
-    : deviceAsset
-      ? {
-          label: device === 'android' ? 'Download Android APK' : 'Download Windows EXE',
-          href: deviceAsset.browser_download_url,
-          icon: '↓',
-          external: false
-        }
-      : {
-          label: device === 'android' ? 'Check Android APK' : 'Check Windows EXE',
-          href: '#downloads',
-          icon: '↓',
-          external: false
-        };
 
   return (
-    <div className="portfolio-shell remote-shell">
+    <div className="portfolio-shell remote-shell remote-store">
       <RemoteSchoolsHeader />
       <main className="portfolio-main remote-main">
-        <section className="remote-hero" id="overview">
-          <div className="remote-hero-copy">
-            <p className="portfolio-eyebrow">Learning platform · Uganda</p>
-            <h1>Learning that<br /><span>can keep going.</span></h1>
-            <p className="portfolio-lede">Remote Schools brings curriculum-aligned lessons, examples, and practice to learners, including when a reliable internet connection is not available.</p>
-            <p className="remote-device-hint"><span className="remote-device-dot" aria-hidden="true"></span> Device detected: <strong>{deviceName}</strong></p>
-            <div className="portfolio-actions">
+        <section className="remote-store-hero" id="overview">
+          <div className="remote-store-copy">
+            <p className="portfolio-eyebrow">Remote Schools Uganda · Learning app</p>
+            <h1>School materials, <span>all in one place.</span></h1>
+            <p className="remote-store-lede">Explore lessons, practice questions, books, and past papers from Uganda’s curriculum. Download class materials to keep studying when you’re offline.</p>
+            <div className="remote-store-device">
+              <span className="remote-device-dot" aria-hidden="true"></span>
+              <span>Recommended for <strong>{deviceName}</strong></span>
+              {release?.tag && <span className="remote-store-version">{release.tag}</span>}
+            </div>
+            <div className="remote-store-actions">
               <a
-                className="portfolio-button portfolio-button-primary"
+                className="remote-store-primary"
                 href={primaryAction.href}
-                {...(primaryAction.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                target={primaryAction.external ? '_blank' : undefined}
+                rel={primaryAction.external ? 'noreferrer' : undefined}
               >
-                {primaryAction.label} <span aria-hidden="true">{primaryAction.icon}</span>
+                <span className="store-button-icon" aria-hidden="true">{deviceAsset ? '↓' : '↗'}</span>
+                <span><strong>{primaryAction.label}</strong><small>{primaryAction.detail}</small></span>
               </a>
-              <a className="portfolio-text-link" href="#downloads">View all options <span aria-hidden="true">↓</span></a>
+              <a className="remote-store-secondary" href="#screenshots">See the app <span aria-hidden="true">↓</span></a>
             </div>
-            <div className="portfolio-meta"><span>Uganda P1–S4 curriculum</span><span>Offline support</span><span>Android and Windows</span></div>
-          </div>
-          <aside className="remote-summary">
-            <span className="note-label">Study materials</span>
-            <h2>Notes, examples, and practice in one place.</h2>
-            <p>Browse lessons by class and keep learning materials close at hand.</p>
-          </aside>
-        </section>
-
-        <section className="remote-content-grid" id="features">
-          <article>
-            <p className="portfolio-eyebrow">Curriculum-first</p>
-            <h2>Made for Uganda’s classrooms.</h2>
-            <p>Lessons are organized by class across the Uganda P1–S4 curriculum, with clear notes, worked examples, and practice questions.</p>
-          </article>
-          <article>
-            <p className="portfolio-eyebrow">Offline support</p>
-            <h2>Keep learning with limited access.</h2>
-            <p>The platform is designed to support learning when connectivity is limited. Use the web version or install the Android and Windows apps when their release files are available.</p>
-          </article>
-          <article>
-            <p className="portfolio-eyebrow">Your study space</p>
-            <h2>Progress that stays yours.</h2>
-            <p>The web experience supports saved progress and personal notes, so learners can return to their work later.</p>
-          </article>
-        </section>
-
-        <section className="remote-download-section" id="downloads">
-          <div className="portfolio-section-heading">
-            <div><p className="portfolio-eyebrow">Desktop and Android</p><h2>Download Remote Schools</h2></div>
-            <p>Download links appear automatically from the latest published Remote Schools release on GitHub.</p>
-          </div>
-          <div className="remote-release-card">
-            <div className="remote-release-heading">
-              <div>
-                <span className="note-label">Latest release</span>
-                <h3>{release?.tag || 'Release downloads'}</h3>
-              </div>
-              {publishedDate && <span className="release-date">{publishedDate}</span>}
+            <div className="remote-store-facts">
+              <span>Uganda P1–S4 curriculum</span>
+              <span>Lessons &amp; practice</span>
+              <span>Offline study</span>
             </div>
-
-            {status === 'loading' && <DownloadSkeleton />}
-            {status === 'ready' && release && (
-              <div className="download-options">
-                {release.apk
-                  ? <a className="download-option" href={release.apk.browser_download_url}><span><strong>Android APK</strong><small>{release.apk.name}</small></span><b>Download ↗</b></a>
-                  : <div className="download-option unavailable"><span><strong>Android APK</strong><small>Not attached to this release</small></span><b>Unavailable</b></div>}
-                {release.exe
-                  ? <a className="download-option" href={release.exe.browser_download_url}><span><strong>Windows EXE</strong><small>{release.exe.name}</small></span><b>Download ↗</b></a>
-                  : <div className="download-option unavailable"><span><strong>Windows EXE</strong><small>Not attached to this release</small></span><b>Unavailable</b></div>}
-              </div>
-            )}
-            {status === 'empty' && (
-              <div className="release-message">
-                <p>No Remote Schools release has been published yet. Android and Windows downloads will appear here as soon as the APK and EXE are attached to a published release.</p>
-                <span>Expected first tag: <strong>v1.0.26</strong></span>
-              </div>
-            )}
-            {status === 'error' && (
-              <div className="release-message">
-                <p>Release information could not be loaded right now. You can still open the web version.</p>
-                <a href="https://github.com/trebronwayne/trebronwayne.github.io/releases" target="_blank" rel="noreferrer">View GitHub releases ↗</a>
-              </div>
-            )}
           </div>
-          {release?.url && <p className="remote-release-note"><a href={release.url} target="_blank" rel="noreferrer">Release notes on GitHub ↗</a></p>}
+          <figure className="remote-store-preview">
+            <img src={screenshots[0].src} alt={screenshots[0].alt} fetchPriority="high" />
+            <figcaption><span>IN THE APP</span><strong>Home · learning · offline downloads</strong></figcaption>
+          </figure>
         </section>
 
+        <section className="remote-store-highlights" id="features" aria-label="What is included">
+          <article>
+            <span className="store-highlight-number">01</span>
+            <div><h2>Lessons by class</h2><p>Browse Uganda curriculum topics across primary and secondary levels.</p></div>
+          </article>
+          <article>
+            <span className="store-highlight-number">02</span>
+            <div><h2>Study materials</h2><p>Find books, notes, past papers, and exam practice by subject.</p></div>
+          </article>
+          <article>
+            <span className="store-highlight-number">03</span>
+            <div><h2>Offline access</h2><p>Download class materials once and keep learning without an internet connection.</p></div>
+          </article>
+        </section>
+
+        <section className="remote-store-screenshots" id="screenshots">
+          <div className="remote-store-section-heading">
+            <div><p className="portfolio-eyebrow">Inside Remote Schools</p><h2>Take a closer look.</h2></div>
+            <p>Real screens from the app, with the same warm, easy-to-read study space.</p>
+          </div>
+          <div className="remote-screenshot-track">
+            {screenshots.map((shot, index) => (
+              <figure className="remote-screenshot-card" key={shot.src}>
+                <a href={shot.src} target="_blank" rel="noreferrer" aria-label={`View full screenshot: ${shot.title}`}>
+                  <img src={shot.src} alt={shot.alt} loading="lazy" decoding="async" />
+                  <span className="remote-screenshot-zoom" aria-hidden="true">↗</span>
+                </a>
+                <figcaption><span className="remote-screenshot-index">{String(index + 1).padStart(2, '0')}</span><div><strong>{shot.title}</strong><p>{shot.description}</p></div></figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        <section className="remote-store-downloads" id="downloads">
+          <div className="remote-store-section-heading">
+            <div><p className="portfolio-eyebrow">Get Remote Schools</p><h2>Choose your version.</h2></div>
+            <p>Pick the app for your device, or open the web version. Downloads use the latest published Remote Schools release.</p>
+          </div>
+          {status === 'loading' && <DownloadSkeleton />}
+          {status === 'ready' && release && (
+            <>
+              <div className="store-release-summary">
+                <span className="store-release-mark" aria-hidden="true">RS</span>
+                <div><strong>Remote Schools</strong><span>{release.tag}{publishedDate ? ` · Published ${publishedDate}` : ''}</span></div>
+                {release.url && <a href={release.url} target="_blank" rel="noreferrer">Release details ↗</a>}
+              </div>
+              <div className="store-download-grid">
+                <StoreDownload
+                  title="Android app"
+                  detail={release.apk ? `${release.apk.name} · ${formatSize(release.apk.size)}` : 'Not included in the latest release'}
+                  asset={release.apk}
+                  action={release.apk ? 'Download APK' : 'Unavailable'}
+                  featured={device === 'android'}
+                />
+                <StoreDownload
+                  title="Windows app"
+                  detail={release.exe ? `${release.exe.name} · ${formatSize(release.exe.size)}` : 'Not included in the latest release'}
+                  asset={release.exe}
+                  action={release.exe ? 'Download EXE' : 'Unavailable'}
+                  featured={device === 'windows'}
+                />
+                <StoreDownload
+                  title="Web app"
+                  detail="Open Remote Schools in your browser"
+                  href={webAppUrl}
+                  action="Open web app"
+                  external
+                  featured={device === 'web'}
+                />
+              </div>
+            </>
+          )}
+          {status === 'empty' && (
+            <>
+              <div className="store-download-grid">
+                <StoreDownload title="Android app" detail="No installer is attached to the latest release yet" action="Coming soon" />
+                <StoreDownload title="Windows app" detail="No installer is attached to the latest release yet" action="Coming soon" />
+                <StoreDownload title="Web app" detail="Open Remote Schools in your browser" href={webAppUrl} action="Open web app" external featured={device === 'web'} />
+              </div>
+            </>
+          )}
+          {status === 'error' && (
+            <>
+              <div className="store-download-grid">
+                <StoreDownload title="Android app" detail="Release details could not be loaded right now" href="https://github.com/trebronwayne/trebronwayne.github.io/releases" action="View releases" external featured={device === 'android'} />
+                <StoreDownload title="Windows app" detail="Release details could not be loaded right now" href="https://github.com/trebronwayne/trebronwayne.github.io/releases" action="View releases" external featured={device === 'windows'} />
+                <StoreDownload title="Web app" detail="Open Remote Schools in your browser" href={webAppUrl} action="Open web app" external featured={device === 'web'} />
+              </div>
+            </>
+          )}
+          <p className="remote-store-note">For Android, Windows, and web. The app download cards only show files from a Remote Schools release.</p>
+        </section>
       </main>
       <RemoteSchoolsFooter />
     </div>

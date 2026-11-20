@@ -1,15 +1,15 @@
 import { execFileSync } from 'node:child_process';
-import { cpSync, copyFileSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, copyFileSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 
 const template = Buffer.from(readFileSync('site.template.b64', 'utf8').trim(), 'base64')
   .toString('utf8')
   .replace('content="#f7f8fa"', 'content="#0b0c0e"')
-  .replace('content="Official Bluebird Android launcher release information, APK downloads, installation instructions, and privacy details."', 'content="Portfolio, CV, and selected software projects by Nobert."')
-  .replace('content="Bluebird — Android launcher releases"', 'content="Nobert — Developer portfolio"')
-  .replace('content="Official release information and APK downloads for the Bluebird Android launcher."', 'content="Selected software projects, skills, and CV for Nobert."')
+  .replace('content="Official Bluebird Android launcher release information, APK downloads, installation instructions, and privacy details."', 'content="Android and web software by Nobert Lamn: DropLink, Bluebird, Remote Schools Uganda, and AubreeKit."')
+  .replace('content="Bluebird — Android launcher releases"', 'content="Nobert Lamn — Android and web developer"')
+  .replace('content="Official release information and APK downloads for the Bluebird Android launcher."', 'content="Android and web software by Nobert Lamn: DropLink, Bluebird, Remote Schools Uganda, and AubreeKit."')
   .replace('<meta property="og:image" content="assets/img/screenshots/desktop.png" />', '')
-  .replace('content="Bluebird" />', 'content="Nobert" />')
-  .replace('<title>Bluebird — Android launcher releases</title>', '<title>Nobert — Developer portfolio</title>')
+  .replace('content="Bluebird" />', 'content="Nobert Lamn" />')
+  .replace('<title>Bluebird — Android launcher releases</title>', '<title>Nobert Lamn — Android and web developer</title>')
   .replace('<link rel="icon" type="image/png" href="assets/img/logo.png" />', '<link rel="icon" type="image/svg+xml" href="/favicon.svg" />')
   .replace('</head>', `    <script>
       (() => {
@@ -35,6 +35,9 @@ execFileSync('npx', ['vite', 'build'], {
   env: process.env
 });
 
+for (const entry of readdirSync('assets')) {
+  if (/^index-[A-Za-z0-9_-]+\.(js|css)$/.test(entry)) rmSync(`assets/${entry}`);
+}
 cpSync('dist/assets', 'assets', { recursive: true });
 for (const entry of readdirSync('dist')) {
   if (entry === 'assets') continue;
@@ -46,8 +49,8 @@ const builtIndex = 'dist/index.html';
 const routePages = [
   {
     path: '/',
-    title: 'Nobert — Developer portfolio',
-    description: 'Portfolio, CV, and selected software projects by Nobert.'
+    title: 'Nobert Lamn — Android and web developer',
+    description: 'Android and web software by Nobert Lamn: DropLink, Bluebird, Remote Schools Uganda, and AubreeKit.'
   },
   {
     path: '/bluebird',
@@ -76,13 +79,13 @@ const routePages = [
   },
   {
     path: '/remote-schools',
-    title: 'Remote Schools — Uganda curriculum learning',
-    description: 'An e-learning platform for Uganda’s curriculum with offline support and Android and Windows downloads.'
+    title: 'Remote Schools — Uganda curriculum learning app',
+    description: 'Explore Remote Schools: Uganda curriculum lessons, books, practice, past papers, and app downloads for offline study.'
   },
   {
     path: '/cv',
-    title: 'CV — Nobert',
-    description: 'A project-focused CV for Nobert, with verified skills and selected software projects.'
+    title: 'CV — Nobert Lamn',
+    description: 'A project-focused CV for Nobert Lamn, with selected software projects and skills.'
   }
 ];
 
@@ -94,11 +97,11 @@ function pageHtml({ path, title, description }) {
       ? 'Bluebird'
       : 'Nobert';
   return readFileSync(builtIndex, 'utf8')
-    .replace('<title>Nobert — Developer portfolio</title>', `<title>${title}</title>`)
-    .replace('content="Portfolio, CV, and selected software projects by Nobert."', `content="${description}"`)
-    .replace('content="Nobert — Developer portfolio"', `content="${title}"`)
-    .replace('content="Selected software projects, skills, and CV for Nobert."', `content="${description}"`)
-    .replace('content="Nobert" />', `content="${siteName}" />`)
+    .replace('<title>Nobert Lamn — Android and web developer</title>', `<title>${title}</title>`)
+    .replace('content="Android and web software by Nobert Lamn: DropLink, Bluebird, Remote Schools Uganda, and AubreeKit."', `content="${description}"`)
+    .replace('content="Nobert Lamn — Android and web developer"', `content="${title}"`)
+    .replace('content="Android and web software by Nobert Lamn: DropLink, Bluebird, Remote Schools Uganda, and AubreeKit."', `content="${description}"`)
+    .replace('content="Nobert Lamn" />', `content="${siteName}" />`)
     .replace('</head>', `  <link rel="canonical" href="https://trebronwayne.github.io${canonicalPath}" />\n  </head>`);
 }
 

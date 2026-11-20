@@ -3,6 +3,8 @@ import { SiteLink } from './site-router.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
 import { useNavigationDismissal } from './useNavigationDismissal.js';
 
+const cvPdf = '/Nobert-Lamn-CV.pdf';
+
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
@@ -12,13 +14,13 @@ export function SiteHeader() {
     <header className="portfolio-header">
       <SiteLink className="portfolio-brand" to="/" onClick={closeMenu}>
         <span className="portfolio-brand-mark" aria-hidden="true">N</span>
-        <span>Nobert</span>
+        <span><strong>Nobert Lamn</strong><small>Android &amp; web developer</small></span>
       </SiteLink>
       <nav id="portfolio-navigation" className={`portfolio-nav ${menuOpen ? 'portfolio-nav--open' : ''}`} aria-label="Main navigation">
-        <SiteLink to="/#projects" onClick={closeMenu}>Projects</SiteLink>
-        <SiteLink to="/bluebird" onClick={closeMenu}>Bluebird</SiteLink>
+        <SiteLink to="/#projects" onClick={closeMenu}>Selected work</SiteLink>
+        <SiteLink to="/#about" onClick={closeMenu}>About</SiteLink>
         <SiteLink to="/remote-schools" onClick={closeMenu}>Remote Schools</SiteLink>
-        <SiteLink to="/cv" onClick={closeMenu}>CV</SiteLink>
+        <a className="portfolio-nav-download" href={cvPdf} download="Nobert-Lamn-CV.pdf" onClick={closeMenu}>Download CV <span aria-hidden="true">↓</span></a>
       </nav>
       <div className="portfolio-header-actions">
         <ThemeToggle />
@@ -40,128 +42,151 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="portfolio-footer">
-      <SiteLink className="portfolio-footer-brand" to="/">Nobert</SiteLink>
-      <span>Software projects built with care.</span>
-      <a href="https://github.com/trebronwayne" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      <SiteLink className="portfolio-footer-brand" to="/">Nobert Lamn</SiteLink>
+      <span>Android and web software · Kampala, Uganda</span>
+      <div className="portfolio-footer-links">
+        <a href="https://github.com/trebronwayne" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        <a href={cvPdf} download="Nobert-Lamn-CV.pdf">CV PDF <span aria-hidden="true">↓</span></a>
+      </div>
     </footer>
   );
 }
 
-const skills = ['Kotlin', 'Android', 'TypeScript', 'JavaScript', 'React', 'CSS'];
+const skillGroups = [
+  { label: 'Android', value: 'Kotlin · Java · Jetpack Compose · Android SDK' },
+  { label: 'Web', value: 'React · TypeScript · HTML/CSS · Vite' },
+  { label: 'Tools', value: 'Android Studio · GitHub · CI workflows' }
+];
 
 const projects = [
   {
+    name: 'DropLink',
+    type: 'Android · peer-to-peer networking',
+    period: '2026',
+    description: 'Turns an Android phone into a private server for nearby devices. Share folders, stream media, or host a local web page over Wi-Fi without a cloud account.',
+    tags: ['Kotlin', 'Jetpack Compose', 'Ktor'],
+    href: 'https://github.com/trebronwayne/DropLink',
+    featured: true
+  },
+  {
     name: 'Bluebird',
-    type: 'Android launcher',
-    description: 'A desktop-style Android launcher with floating windows, a taskbar, and built-in applications.',
-    tags: ['Android', 'Kotlin'],
+    type: 'Open-source Android desktop',
+    period: '2025—now',
+    description: 'A desktop environment for Android with resizable windows, a taskbar, a Start menu, and built-in applications.',
+    tags: ['Kotlin', 'Jetpack Compose'],
     href: '/bluebird',
-    internal: true
+    internal: true,
+    preview: '/assets/img/screenshots/desktop.png',
+    previewAlt: 'Bluebird Android desktop interface'
   },
   {
-    name: 'Remote Schools',
-    type: 'Learning platform',
-    description: 'An e-learning platform based on Uganda’s curriculum, designed with offline support.',
-    tags: ['Education', 'Offline support'],
+    name: 'Remote Schools Uganda',
+    type: 'Curriculum learning · offline study',
+    period: '2025—now',
+    description: 'A learning platform based on Uganda’s P1–S4 curriculum, with class materials learners can download and use offline.',
+    tags: ['Education', 'React', 'Offline-first'],
     href: '/remote-schools',
-    internal: true
+    internal: true,
+    preview: '/assets/remote-schools/home-learning.png',
+    previewAlt: 'Remote Schools learner home screen'
   },
   {
-    name: 'EchoText',
-    type: 'Android utility',
-    description: 'A text editor studio with text-repeating capabilities.',
-    tags: ['Android', 'Kotlin'],
-    href: 'https://github.com/trebronwayne/EchoText'
-  },
-  {
-    name: 'Eddy Wizzy',
-    type: 'Website',
-    description: 'An official website project built for Eddy Wizzy.',
-    tags: ['JavaScript', 'Web'],
-    href: 'https://github.com/trebronwayne/eddy-wizzy-website'
+    name: 'AubreeKit',
+    type: 'Android animation library',
+    period: '2026',
+    description: 'A lightweight Android library for adding a small animated character to an app; it powers the Aubree mascot in DropLink.',
+    tags: ['Kotlin', 'Android library'],
+    href: 'https://github.com/trebronwayne/AubreeKit'
   }
 ];
 
-function ProjectCard({ project, index }) {
+function ProjectEntry({ project, index }) {
   const content = (
     <>
-      <div className="project-card-top">
-        <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-        <span className="project-type">{project.type}</span>
+      {project.preview && <img className="project-entry-image" src={project.preview} alt={project.previewAlt} loading="lazy" decoding="async" />}
+      <div className="project-entry-copy">
+        <div className="project-entry-top">
+          <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
+          <span className="project-entry-type">{project.type}</span>
+          <time>{project.period}</time>
+        </div>
+        <h3>{project.name}</h3>
+        <p>{project.description}</p>
+        <div className="project-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+        <span className="project-card-link">{project.internal ? 'Explore project' : 'View repository'} <span aria-hidden="true">↗</span></span>
       </div>
-      <h3>{project.name}</h3>
-      <p>{project.description}</p>
-      <div className="project-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-      <span className="project-card-link">{project.internal ? 'Explore project' : 'View repository'} <span aria-hidden="true">↗</span></span>
     </>
   );
 
   return project.internal
-    ? <SiteLink className="project-card" to={project.href}>{content}</SiteLink>
-    : <a className="project-card" href={project.href} target="_blank" rel="noreferrer">{content}</a>;
+    ? <SiteLink className={`project-entry ${project.featured ? 'project-entry-featured' : ''}`} to={project.href}>{content}</SiteLink>
+    : <a className={`project-entry ${project.featured ? 'project-entry-featured' : ''}`} href={project.href} target="_blank" rel="noreferrer">{content}</a>;
 }
 
 export default function PortfolioPage() {
   useEffect(() => {
-    document.title = 'Nobert — Developer portfolio';
+    document.title = 'Nobert Lamn — Android and web developer';
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.content = 'Selected software projects, skills, and CV for Nobert.';
+    if (description) description.content = 'Android and web software by Nobert Lamn: DropLink, Bluebird, Remote Schools Uganda, and AubreeKit.';
   }, []);
 
   return (
-    <div className="portfolio-shell">
+    <div className="portfolio-shell portfolio-page">
       <SiteHeader />
-      <main className="portfolio-main">
-        <section className="portfolio-hero" id="top">
-          <div className="portfolio-hero-copy">
-            <p className="portfolio-eyebrow">Software developer · Android · Web</p>
-            <h1>Android apps,<br />websites, and<br /><span>learning tools.</span></h1>
-            <p className="portfolio-lede">I’m Nobert, a software developer. My projects include Bluebird, a desktop-style Android launcher; EchoText, a text utility; and Remote Schools, an e-learning platform based on Uganda’s curriculum.</p>
+      <main className="portfolio-main portfolio-resume-layout" id="top">
+        <aside className="portfolio-profile" aria-label="Profile and skills">
+          <figure className="profile-portrait-wrap">
+            <img className="profile-portrait" src="/assets/profile/nobert-lamn.jpg" alt="Portrait of Nobert Lamn" />
+            <figcaption>Where it started: my first years exploring computers.</figcaption>
+          </figure>
+          <section className="profile-facts">
+            <p className="portfolio-eyebrow">Contact</p>
+            <p>Kampala, Uganda</p>
+            <a href="https://github.com/trebronwayne" target="_blank" rel="noreferrer">github.com/trebronwayne ↗</a>
+            <a href="https://trebronwayne.github.io" target="_blank" rel="noreferrer">trebronwayne.github.io ↗</a>
+          </section>
+          <section className="profile-skills">
+            <p className="portfolio-eyebrow">Skills</p>
+            {skillGroups.map((group) => (
+              <div key={group.label}>
+                <strong>{group.label}</strong>
+                <p>{group.value}</p>
+              </div>
+            ))}
+          </section>
+          <section className="profile-facts profile-education">
+            <p className="portfolio-eyebrow">Education</p>
+            <strong>Secondary school (O-Level)</strong>
+            <p>Studying toward the Uganda Certificate of Education, alongside self-directed software work.</p>
+          </section>
+        </aside>
+
+        <div className="portfolio-content">
+          <section className="portfolio-intro" id="about">
+            <p className="portfolio-eyebrow">Android and web developer · Open-source software</p>
+            <h1>Nobert <span>Lamn</span></h1>
+            <p className="portfolio-lede">Self-taught developer with a record of shipping real products. I build fast, responsive software for low-end devices and unreliable networks—from Android applications to offline-first learning tools.</p>
             <div className="portfolio-actions">
-              <SiteLink className="portfolio-button portfolio-button-primary" to="/#projects">Explore selected work</SiteLink>
-              <SiteLink className="portfolio-text-link" to="/cv">View CV <span aria-hidden="true">↗</span></SiteLink>
+              <a className="portfolio-button portfolio-button-primary" href={cvPdf} download="Nobert-Lamn-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
+              <a className="portfolio-text-link" href="#projects">Selected work <span aria-hidden="true">↓</span></a>
             </div>
-            <div className="portfolio-meta"><span>Android applications</span><span>Web products</span><span>Learning tools</span></div>
-          </div>
-          <aside className="portfolio-hero-note" aria-label="Portfolio introduction">
-            <span className="note-label">Current focus</span>
-            <h2>Remote Schools</h2>
-            <p>An e-learning platform for Uganda’s curriculum, designed with offline support.</p>
-            <SiteLink to="/remote-schools">See Remote Schools <span aria-hidden="true">↗</span></SiteLink>
-          </aside>
-        </section>
+          </section>
 
-        <section className="portfolio-section portfolio-about" id="about">
-          <div>
-            <p className="portfolio-eyebrow">About</p>
-            <h2>Building across<br />platforms and needs.</h2>
-          </div>
-          <div className="portfolio-about-copy">
-            <p>I build Android and web applications. Bluebird explores a desktop-style Android home screen; Remote Schools organizes lessons around Uganda’s curriculum and supports offline learning. I also work on utilities such as EchoText.</p>
-            <a href="https://github.com/trebronwayne" target="_blank" rel="noreferrer">Find me on GitHub <span aria-hidden="true">↗</span></a>
-          </div>
-        </section>
+          <section className="portfolio-section portfolio-projects" id="projects">
+            <div className="portfolio-section-heading">
+              <div><p className="portfolio-eyebrow">Selected work</p><h2>Projects</h2></div>
+              <p>Products and libraries made to solve a specific problem, shaped by the devices and networks people use.</p>
+            </div>
+            <div className="portfolio-project-list">
+              {projects.map((project, index) => <ProjectEntry key={project.name} project={project} index={index} />)}
+            </div>
+          </section>
 
-        <section className="portfolio-section" id="projects">
-          <div className="portfolio-section-heading">
-            <div><p className="portfolio-eyebrow">Selected work</p><h2>Projects</h2></div>
-            <p>Products and tools built across Android, education, and the web.</p>
-          </div>
-          <div className="project-grid">{projects.map((project, index) => <ProjectCard key={project.name} project={project} index={index} />)}</div>
-        </section>
-
-        <section className="portfolio-section skills-section" id="skills">
-          <div className="portfolio-section-heading">
-            <div><p className="portfolio-eyebrow">Tools and technologies</p><h2>Skills</h2></div>
-            <p>Technologies reflected in the published projects.</p>
-          </div>
-          <div className="skills-list">{skills.map((skill) => <span key={skill}>{skill}</span>)}</div>
-        </section>
-
-        <section className="portfolio-cta">
-          <div><p className="portfolio-eyebrow">Curriculum vitae</p><h2>More about my work.</h2></div>
-          <SiteLink className="portfolio-button portfolio-button-secondary" to="/cv">Open CV <span aria-hidden="true">↗</span></SiteLink>
-        </section>
+          <section className="portfolio-about-note">
+            <div><p className="portfolio-eyebrow">How I work</p><h2>Practical software,<br />made for real conditions.</h2></div>
+            <p>I care about clear interfaces, dependable offline use, and making software run well on the devices people already have. My work spans mobile, local networking, and education.</p>
+          </section>
+        </div>
       </main>
       <SiteFooter />
     </div>

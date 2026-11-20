@@ -11,31 +11,31 @@ const cvProjects = [
     internal: true
   },
   {
-    name: 'Remote Schools',
-    summary: 'E-learning platform based on Uganda’s curriculum, with offline support.',
+    name: 'Remote Schools Uganda',
+    summary: 'An offline-first learning platform based on Uganda’s P1–S4 curriculum.',
     stack: 'Education technology · TypeScript',
     href: '/remote-schools',
     internal: true
   },
   {
-    name: 'EchoText',
-    summary: 'Text editor studio with text-repeating capabilities.',
-    stack: 'Android · Kotlin',
-    href: 'https://github.com/trebronwayne/EchoText'
+    name: 'DropLink',
+    summary: 'An Android app that turns a phone into a private server for nearby devices, with local file sharing, media streaming, and no cloud account.',
+    stack: 'Android · Kotlin · Ktor',
+    href: 'https://github.com/trebronwayne/DropLink'
   },
   {
-    name: 'Eddy Wizzy website',
-    summary: 'Official website project.',
-    stack: 'JavaScript · Web',
-    href: 'https://github.com/trebronwayne/eddy-wizzy-website'
+    name: 'AubreeKit',
+    summary: 'A lightweight Android animation library that powers the Aubree mascot used in DropLink.',
+    stack: 'Android · Kotlin',
+    href: 'https://github.com/trebronwayne/AubreeKit'
   }
 ];
 
 export default function CvPage() {
   useEffect(() => {
-    document.title = 'CV — Nobert';
+    document.title = 'CV — Nobert Lamn';
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.content = 'A project-focused CV for Nobert, with verified skills and selected software projects.';
+    if (description) description.content = 'A project-focused CV for Nobert Lamn, with selected software projects and skills.';
   }, []);
 
   return (
@@ -44,14 +44,17 @@ export default function CvPage() {
       <main className="cv-page">
         <div className="cv-topline">
           <p className="portfolio-eyebrow">Curriculum vitae</p>
-          <button className="portfolio-button portfolio-button-secondary no-print" type="button" onClick={() => window.print()}>Print / save as PDF</button>
+          <div className="cv-topline-actions no-print">
+            <a className="portfolio-button portfolio-button-primary" href="/Nobert-Lamn-CV.pdf" download="Nobert-Lamn-CV.pdf">Download PDF <span aria-hidden="true">↓</span></a>
+            <button className="portfolio-button portfolio-button-secondary" type="button" onClick={() => window.print()}>Print page</button>
+          </div>
         </div>
         <section className="cv-intro">
           <div>
-            <h1>Nobert</h1>
-            <p className="cv-role">Software developer · Android · Web</p>
+            <h1>Nobert Lamn</h1>
+            <p className="cv-role">Android and web developer · Open-source software</p>
           </div>
-          <p className="cv-summary">I build practical software across Android and the web, with selected work in mobile applications, education technology, and responsive websites.</p>
+          <p className="cv-summary">Self-taught Android and web developer in Kampala, Uganda. I build responsive software for low-end devices and unreliable networks.</p>
         </section>
         <section className="cv-section">
           <h2>Technical skills</h2>
