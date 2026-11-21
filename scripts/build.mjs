@@ -83,6 +83,11 @@ const routePages = [
     description: 'Explore Remote Schools: Uganda curriculum lessons, books, practice, past papers, and app downloads for offline study.'
   },
   {
+    path: '/droplink',
+    title: 'DropLink — Your phone. Your server. Your network.',
+    description: 'DropLink turns an Android phone into a private local server for file transfers, media, and nearby devices.'
+  },
+  {
     path: '/cv',
     title: 'CV — Nobert Lamn',
     description: 'A project-focused CV for Nobert Lamn, with selected software projects and skills.'
@@ -93,6 +98,8 @@ function pageHtml({ path, title, description }) {
   const canonicalPath = path === '/' ? '/' : `${path}/`;
   const siteName = path === '/remote-schools'
     ? 'Remote Schools'
+    : path === '/droplink'
+      ? 'DropLink'
     : path.startsWith('/bluebird')
       ? 'Bluebird'
       : 'Nobert';

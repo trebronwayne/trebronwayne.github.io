@@ -65,8 +65,12 @@ const projects = [
     period: '2026',
     description: 'Turns an Android phone into a private server for nearby devices. Share folders, stream media, or host a local web page over Wi-Fi without a cloud account.',
     tags: ['Kotlin', 'Jetpack Compose', 'Ktor'],
-    href: 'https://github.com/trebronwayne/DropLink',
-    featured: true
+    href: '/droplink',
+    internal: true,
+    featured: true,
+    linkLabel: 'Screenshots & latest release',
+    preview: '/assets/droplink/home.png',
+    previewAlt: 'DropLink home screen showing a phone configured as a local network server'
   },
   {
     name: 'Bluebird',
@@ -113,7 +117,7 @@ function ProjectEntry({ project, index }) {
         <h3>{project.name}</h3>
         <p>{project.description}</p>
         <div className="project-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-        <span className="project-card-link">{project.internal ? 'Explore project' : 'View repository'} <span aria-hidden="true">↗</span></span>
+        <span className="project-card-link">{project.linkLabel || (project.internal ? 'Explore project' : 'View repository')} <span aria-hidden="true">↗</span></span>
       </div>
     </>
   );

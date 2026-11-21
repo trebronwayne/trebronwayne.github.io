@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import BluebirdPage from './App.jsx';
 import CvPage from './CvPage.jsx';
+import DropLinkPage from './DropLinkPage.jsx';
 import PortfolioPage, { SiteFooter, SiteHeader } from './PortfolioPage.jsx';
 import RemoteSchoolsPage from './RemoteSchoolsPage.jsx';
 import { NavigationProvider, SiteLink } from './site-router.jsx';
@@ -56,6 +57,7 @@ export default function SiteApp() {
   if (path === '/') page = <PortfolioPage />;
   else if (path === '/cv') page = <CvPage />;
   else if (path === '/remote-schools') page = <RemoteSchoolsPage />;
+  else if (path === '/droplink') page = <DropLinkPage />;
   else if (path === '/bluebird' || path === '/bluebird/home') page = <BluebirdPage page="home" />;
   else if (path === '/bluebird/about') page = <BluebirdPage page="about" />;
   else if (path === '/bluebird/support') page = <BluebirdPage page="support" />;
