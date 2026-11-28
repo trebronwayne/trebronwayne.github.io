@@ -1,0 +1,103 @@
+[
+ {
+  "id": "lan-001",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "Which language has the most speakers?",
+  "body": "Mandarin Chinese has the most native speakers, but English is spoken by the most people in total, as a first or second language."
+ },
+ {
+  "id": "lan-002",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "There are more than 7,000 languages",
+  "body": "About 7,000 languages are spoken in the world. Papua New Guinea has around 840 of them, the most of any country."
+ },
+ {
+  "id": "lan-003",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "A flamboyance of flamingos",
+  "body": "Groups of animals have special names: a flamboyance of flamingos, a murder of crows, a parliament of owls, a pride of lions and a crash of rhinos."
+ },
+ {
+  "id": "lan-004",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "A sentence with every letter",
+  "body": "“The quick brown fox jumps over the lazy dog” uses all 26 letters of the English alphabet. A sentence like that is called a pangram."
+ },
+ {
+  "id": "lan-005",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "Where the word “alphabet” comes from",
+  "body": "It comes from the first two Greek letters, alpha and beta."
+ },
+ {
+  "id": "lan-006",
+  "topic": "language",
+  "subjects": [
+   "English",
+   "Geography"
+  ],
+  "title": "Uganda speaks more than 40 languages",
+  "body": "More than 40 languages are spoken in Uganda. Luganda is the most widely spoken local language, and English and Swahili are official languages."
+ },
+ {
+  "id": "lan-007",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "Palindromes read the same backwards",
+  "body": "Words like “level”, “radar” and “civic” read the same in both directions. So does the sentence “Was it a car or a cat I saw?”."
+ },
+ {
+  "id": "lan-008",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "Many English words travelled far",
+  "body": "English has borrowed words from hundreds of languages: “safari” from Swahili, “pyjamas” from Hindi, “ketchup” from Chinese and “banana” from West African languages."
+ },
+ {
+  "id": "lan-009",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "Why we say “Mr” and “Mrs”",
+  "body": "These are shortened forms of “Mister” and “Mistress”. Writing a shortened form of a word is called an abbreviation."
+ },
+ {
+  "id": "lan-010",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "Proverbs: wisdom in a few words",
+  "body": "Most languages have proverbs. In Swahili people say, “Haba na haba hujaza kibaba”: little by little fills the measure. It teaches that small, steady effort adds up."
+ },
+ {
+  "id": "lan-011",
+  "topic": "language",
+  "subjects": [
+   "English"
+  ],
+  "title": "The longest word in English",
+  "body": "The longest word in most dictionaries has 45 letters and names a lung disease caused by tiny dust. Few people use it, though!",
+  "level": "secondary"
+ }
+]

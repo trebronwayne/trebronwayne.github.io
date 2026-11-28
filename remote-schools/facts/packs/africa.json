@@ -1,0 +1,105 @@
+[
+ {
+  "id": "afr-001",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "54 countries, one continent",
+  "body": "Africa has 54 countries recognised by the United Nations. It is the second largest continent and has more than 1.4 billion people."
+ },
+ {
+  "id": "afr-002",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "Lake Victoria",
+  "body": "Lake Victoria is the largest lake in Africa and the largest tropical lake in the world. Uganda, Kenya and Tanzania share it."
+ },
+ {
+  "id": "afr-003",
+  "topic": "africa",
+  "subjects": [
+   "Geography",
+   "History"
+  ],
+  "title": "The Nile begins in Uganda",
+  "body": "The White Nile flows out of Lake Victoria at Jinja, Uganda. From there it travels more than 6,000 kilometres north to the Mediterranean Sea, one of the longest rivers on Earth."
+ },
+ {
+  "id": "afr-004",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "Rwenzori: the mountains of the moon",
+  "body": "Margherita Peak in the Rwenzori Mountains is Uganda’s highest point at 5,109 metres. The ancient Greeks may have called these snowy peaks near the equator the “Mountains of the Moon”."
+ },
+ {
+  "id": "afr-005",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "Murchison Falls squeezes the Nile",
+  "body": "At Murchison Falls the mighty Nile is squeezed through a gap only about 7 metres wide and drops about 43 metres. The roar can be heard from far away."
+ },
+ {
+  "id": "afr-006",
+  "topic": "africa",
+  "subjects": [
+   "English",
+   "Geography"
+  ],
+  "title": "Swahili reaches over 100 million",
+  "body": "Swahili is spoken by more than 100 million people in East and Central Africa. The word “safari” in Swahili simply means “journey”."
+ },
+ {
+  "id": "afr-007",
+  "topic": "africa",
+  "subjects": [
+   "Biology",
+   "Geography"
+  ],
+  "title": "Madagascar: a world of its own",
+  "body": "Most of Madagascar’s plants and animals are found nowhere else on Earth, including lemurs, which live only there."
+ },
+ {
+  "id": "afr-008",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "The Sahara is huge",
+  "body": "The Sahara Desert covers about 9 million square kilometres, roughly the size of the United States. It was green with lakes and grass about 6,000 to 10,000 years ago."
+ },
+ {
+  "id": "afr-009",
+  "topic": "africa",
+  "subjects": [
+   "Geography",
+   "History"
+  ],
+  "title": "Wangari Maathai and the trees",
+  "body": "Wangari Maathai of Kenya started the Green Belt Movement, which has planted tens of millions of trees. In 2004 she became the first African woman to win the Nobel Peace Prize."
+ },
+ {
+  "id": "afr-010",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "Uganda sits on the Equator",
+  "body": "The Equator crosses Uganda, close to the road from Kampala to Masaka. Standing on it, you can have one foot in each hemisphere."
+ },
+ {
+  "id": "afr-011",
+  "topic": "africa",
+  "subjects": [
+   "Geography"
+  ],
+  "title": "Kilimanjaro: Africa’s rooftop",
+  "body": "Mount Kilimanjaro in Tanzania is 5,895 metres high, the tallest mountain in Africa and the tallest free-standing mountain in the world."
+ }
+]

@@ -1,0 +1,112 @@
+[
+ {
+  "id": "nat-001",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "An animal with three hearts",
+  "body": "An octopus has three hearts. Two pump blood through its gills and one pumps it to the rest of the body. Its blood is blue because it uses copper, not iron, to carry oxygen."
+ },
+ {
+  "id": "nat-002",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Bamboo: the fast grower",
+  "body": "Some bamboo plants can grow up to about 90 centimetres in a single day. That is nearly a metre of new stem in 24 hours."
+ },
+ {
+  "id": "nat-003",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Trees that share through fungi",
+  "body": "Scientists have found that fungi link the roots of many trees, and sugars and chemical signals can pass between them. How much trees really “help” each other this way is still being debated."
+ },
+ {
+  "id": "nat-004",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "How bees give directions",
+  "body": "A honeybee that finds flowers returns to the hive and dances. The angle of her “waggle” shows the direction of the flowers compared with the Sun, and how long she waggles shows the distance."
+ },
+ {
+  "id": "nat-005",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Elephants can “hear” through their feet",
+  "body": "Elephants make very low rumbles that travel through the ground as well as the air. They can feel these vibrations through their feet and trunk, which helps herds stay in touch from far away."
+ },
+ {
+  "id": "nat-006",
+  "topic": "nature",
+  "subjects": [
+   "Biology",
+   "Geography"
+  ],
+  "title": "The baobab: a tree that holds a water tank",
+  "body": "A large baobab can store tens of thousands, and in the biggest cases over 100,000, litres of water in its thick trunk. It helps the tree survive long dry seasons."
+ },
+ {
+  "id": "nat-007",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Giraffes and you have the same neck bones",
+  "body": "A giraffe’s neck can be two metres long, yet it has just seven neck bones, the same number as a human. Each bone is simply very long."
+ },
+ {
+  "id": "nat-008",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Why sunflowers face the Sun",
+  "body": "Young sunflowers turn their heads from east to west during the day to follow the Sun. This is called heliotropism. Fully grown flowers usually stay facing east."
+ },
+ {
+  "id": "nat-009",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Only female mosquitoes bite",
+  "body": "Female mosquitoes need protein from blood to make their eggs. They find people by sensing the carbon dioxide we breathe out and the smell of our skin. Males feed on plant nectar."
+ },
+ {
+  "id": "nat-010",
+  "topic": "nature",
+  "subjects": [
+   "Biology",
+   "Geography"
+  ],
+  "title": "Bwindi: home of gorillas",
+  "body": "Bwindi Impenetrable Forest in south-western Uganda is home to around half of the world’s mountain gorillas. It is one of the oldest and richest forests in Africa."
+ },
+ {
+  "id": "nat-011",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "A leaf is a food factory",
+  "body": "Plants take in carbon dioxide and water and use sunlight to make sugar. This is photosynthesis, and the oxygen they release as a by-product is the oxygen we breathe."
+ },
+ {
+  "id": "nat-012",
+  "topic": "nature",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Fish don’t blink",
+  "body": "Most fish have no eyelids, so they never blink. Their eyes stay clean and wet because they live in water."
+ }
+]

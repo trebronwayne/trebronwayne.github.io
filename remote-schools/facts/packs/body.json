@@ -1,0 +1,101 @@
+[
+ {
+  "id": "bod-001",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Your heart never takes a day off",
+  "body": "The human heart beats about 100,000 times every day and pumps thousands of litres of blood around your body."
+ },
+ {
+  "id": "bod-002",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Babies have more bones than adults",
+  "body": "A baby is born with about 300 soft bones and cartilage pieces. As they grow, many fuse together, and an adult has 206 bones."
+ },
+ {
+  "id": "bod-003",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Your brain is an energy hog",
+  "body": "Your brain is only about 2% of your body weight, but it uses roughly 20% of your energy, even while you sleep."
+ },
+ {
+  "id": "bod-004",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Tooth enamel: the hardest part of you",
+  "body": "The shiny outside of your teeth, enamel, is the hardest substance in the human body. But it cannot grow back, so brushing and avoiding too much sugar really matter."
+ },
+ {
+  "id": "bod-005",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Blood cells have a short life",
+  "body": "A red blood cell lives about 120 days. Your body makes millions of new ones every second in the bone marrow."
+ },
+ {
+  "id": "bod-006",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "No two fingerprints are the same",
+  "body": "Fingerprints form before birth. Even identical twins, who share the same DNA, have different fingerprints."
+ },
+ {
+  "id": "bod-007",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Your small intestine is about 6 metres long",
+  "body": "The small intestine is about 6 metres long when stretched out. It is packed into your belly in neat folds and loops."
+ },
+ {
+  "id": "bod-008",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "The smallest bone in your body",
+  "body": "The stapes, deep inside your ear, is about 3 millimetres long. It helps carry sound to the inner ear."
+ },
+ {
+  "id": "bod-009",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Skin: your biggest organ",
+  "body": "Your skin is the largest organ of your body. It protects you from germs, helps control your temperature and gives you your sense of touch."
+ },
+ {
+  "id": "bod-010",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "Why you need to sleep",
+  "body": "During sleep your brain sorts and stores what you learned during the day. Learners who sleep enough usually remember more and concentrate better."
+ },
+ {
+  "id": "bod-011",
+  "topic": "body",
+  "subjects": [
+   "Biology"
+  ],
+  "title": "You are mostly water",
+  "body": "Water makes up about 60% of an adult’s body weight, and even more in babies. Drinking enough keeps your body and brain working well."
+ }
+]

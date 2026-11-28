@@ -1,0 +1,105 @@
+[
+ {
+  "id": "mat-001",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "Zero had to be invented",
+  "body": "Ancient peoples counted without a zero. In 628 AD the Indian mathematician Brahmagupta wrote down the rules for using zero in sums, and the idea slowly spread around the world."
+ },
+ {
+  "id": "mat-002",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "0.999… really equals 1",
+  "body": "If you add 0.333… three times you get 0.999… But 0.333… is one third, and three thirds make 1. So 0.999… with the nines going on for ever is exactly 1."
+ },
+ {
+  "id": "mat-003",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "Pi never ends",
+  "body": "Pi, the number you get when you divide a circle’s distance round by its width, is about 3.14159. Its digits go on for ever without repeating, so no fraction can match it exactly."
+ },
+ {
+  "id": "mat-004",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "The birthday surprise",
+  "body": "In a room of just 23 people there is about a 50% chance that two of them share a birthday. With 70 people it is almost certain."
+ },
+ {
+  "id": "mat-005",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics",
+   "Biology"
+  ],
+  "title": "Fibonacci in the garden",
+  "body": "Start with 1, 1 and keep adding the last two numbers: 1, 1, 2, 3, 5, 8, 13… Many sunflower heads and pine cones have spirals in these numbers."
+ },
+ {
+  "id": "mat-006",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "A card shuffle that has never happened before",
+  "body": "There are about 8 followed by 67 zeros ways to order a pack of 52 cards. When you shuffle properly, it is very likely that nobody in history has had that exact order before.",
+  "level": "secondary"
+ },
+ {
+  "id": "mat-007",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics",
+   "History"
+  ],
+  "title": "The Ishango bone",
+  "body": "The Ishango bone was found near Lake Edward on the Uganda–Congo border region. It is about 20,000 years old and has rows of notches, one of the oldest known counting tools."
+ },
+ {
+  "id": "mat-008",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics",
+   "English"
+  ],
+  "title": "Algebra and algorithm come from Arabic",
+  "body": "The word “algebra” comes from al-jabr in a book by the scholar Al-Khwarizmi in the 800s. His name also gave us the word “algorithm”."
+ },
+ {
+  "id": "mat-009",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "2 is the odd one out",
+  "body": "Two is the only even prime number. Every other even number can be divided by 2, so it cannot be prime."
+ },
+ {
+  "id": "mat-010",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "A shape with one side",
+  "body": "Take a strip of paper, give it half a twist and tape the ends together. You have made a Möbius strip: it has only one side and one edge. Run a pencil along it and see!"
+ },
+ {
+  "id": "mat-011",
+  "topic": "maths",
+  "subjects": [
+   "Mathematics"
+  ],
+  "title": "A circle has endless symmetry",
+  "body": "A circle looks the same when you turn it by any amount, and has infinitely many lines of symmetry. A square has only four."
+ }
+]

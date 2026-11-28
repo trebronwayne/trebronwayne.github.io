@@ -1,0 +1,105 @@
+[
+ {
+  "id": "spa-001",
+  "topic": "space",
+  "subjects": [
+   "Physics",
+   "Geography"
+  ],
+  "title": "A day on Venus is longer than its year",
+  "body": "Venus spins so slowly that one turn takes about 243 Earth days, but it goes around the Sun in about 225 days. So a day there is longer than a year."
+ },
+ {
+  "id": "spa-002",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Saturn would float",
+  "body": "Saturn is mostly gas and its average density is lower than water’s. If you could find a bath big enough, Saturn would float."
+ },
+ {
+  "id": "spa-003",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "The Sun is almost everything",
+  "body": "The Sun holds about 99.8% of all the mass in the solar system. All the planets, moons and asteroids together make up the remaining 0.2%."
+ },
+ {
+  "id": "spa-004",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Astronauts grow taller in space",
+  "body": "With no gravity squashing the spine, an astronaut can grow a few centimetres taller in space. Back on Earth they shrink to their normal height again."
+ },
+ {
+  "id": "spa-005",
+  "topic": "space",
+  "subjects": [
+   "Chemistry",
+   "Physics"
+  ],
+  "title": "Mars is red because it is rusty",
+  "body": "The soil and dust on Mars contain lots of iron oxide, the same thing as rust. That is why the planet looks red-orange, even from Earth."
+ },
+ {
+  "id": "spa-006",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "The Moon is slowly leaving us",
+  "body": "The Moon moves about 3.8 centimetres farther from the Earth every year, about as fast as your fingernails grow."
+ },
+ {
+  "id": "spa-007",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "A storm bigger than Earth",
+  "body": "Jupiter’s Great Red Spot is a giant storm that has been watched for well over 150 years. It is wider than the Earth, though it has been getting smaller."
+ },
+ {
+  "id": "spa-008",
+  "topic": "space",
+  "subjects": [
+   "Physics",
+   "Geography"
+  ],
+  "title": "Our home galaxy",
+  "body": "The Milky Way, the galaxy that contains our Sun, has hundreds of billions of stars. Many of them have planets going around them."
+ },
+ {
+  "id": "spa-009",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Footprints that stay",
+  "body": "There is no wind or rain on the Moon, so the footprints left by the Apollo astronauts in 1969 are expected to stay for a very long time."
+ },
+ {
+  "id": "spa-010",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Light from the past",
+  "body": "When you look at a star you see light that left it long ago. Some stars you can see on a clear night are hundreds or even thousands of light-years away, so you are seeing the past."
+ },
+ {
+  "id": "spa-011",
+  "topic": "space",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Neutron stars are unbelievably dense",
+  "body": "When some massive stars die, they leave behind a neutron star only about 20 km across. A teaspoon of its material would weigh billions of tonnes.",
+  "level": "secondary"
+ }
+]

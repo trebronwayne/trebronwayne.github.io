@@ -1,0 +1,114 @@
+[
+ {
+  "id": "sci-001",
+  "topic": "science",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Lightning is hotter than the Sun’s surface",
+  "body": "A bolt of lightning heats the air around it to about 30,000 °C. The surface of the Sun is about 5,500 °C, so lightning is roughly five times hotter, but only for a split second."
+ },
+ {
+  "id": "sci-002",
+  "topic": "science",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Why you can’t hear a shout in space",
+  "body": "Sound needs something to travel through, such as air or water. Space is almost empty, so there is nothing to carry the vibrations. Astronauts talk by radio."
+ },
+ {
+  "id": "sci-003",
+  "topic": "science",
+  "subjects": [
+   "Physics",
+   "Chemistry"
+  ],
+  "title": "Ice floats, and that saved life on Earth",
+  "body": "Most liquids shrink when they freeze, but water expands by about 9%, which makes ice lighter than water. Because ice floats, lakes freeze from the top and the fish below survive winter."
+ },
+ {
+  "id": "sci-004",
+  "topic": "science",
+  "subjects": [
+   "Chemistry"
+  ],
+  "title": "Diamond and pencil lead are the same element",
+  "body": "Diamond and graphite (the “lead” in a pencil) are both pure carbon. The atoms are arranged differently: in diamond each atom is locked in four directions, in graphite they sit in slippery layers."
+ },
+ {
+  "id": "sci-005",
+  "topic": "science",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Sunlight is 8 minutes old",
+  "body": "Light travels about 300,000 kilometres every second, and the Sun is about 150 million kilometres away. The light you feel on your face left the Sun a little over 8 minutes ago."
+ },
+ {
+  "id": "sci-006",
+  "topic": "science",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "A rainbow is really a full circle",
+  "body": "Raindrops bend and split sunlight into colours in a complete circle. From the ground the horizon hides the lower half, so we see an arch. From a plane or a hill you can sometimes see the whole circle."
+ },
+ {
+  "id": "sci-007",
+  "topic": "science",
+  "subjects": [
+   "Physics",
+   "Chemistry"
+  ],
+  "title": "The ice cream mix that surprised a schoolboy",
+  "body": "In 1963 Erasto Mpemba, a student in Tanzania, noticed that hot ice-cream mix seemed to freeze faster than cold mix. Scientists still study the “Mpemba effect” today, and they do not fully agree on why it happens."
+ },
+ {
+  "id": "sci-008",
+  "topic": "science",
+  "subjects": [
+   "Chemistry",
+   "Physics"
+  ],
+  "title": "You are made of star dust",
+  "body": "Hydrogen and helium formed soon after the Big Bang, but heavier elements such as the carbon, oxygen and iron in your body were made inside stars and in exploding stars, billions of years ago."
+ },
+ {
+  "id": "sci-009",
+  "topic": "science",
+  "subjects": [
+   "Chemistry"
+  ],
+  "title": "Honey that lasts for thousands of years",
+  "body": "Honey has very little water and is slightly acidic, so germs struggle to grow in it. Sealed honey can stay good for a very long time. Archaeologists have reported edible-looking honey in ancient tombs."
+ },
+ {
+  "id": "sci-010",
+  "topic": "science",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "Why the sky is blue",
+  "body": "Sunlight contains every colour. The gas in the air scatters short blue waves much more than long red ones, so blue light reaches your eyes from every part of the sky. At sunset the light travels farther, so the reds are left."
+ },
+ {
+  "id": "sci-011",
+  "topic": "science",
+  "subjects": [
+   "Physics"
+  ],
+  "title": "The loudest sound that circled the world",
+  "body": "When the Krakatoa volcano erupted in 1883, pressure waves from it travelled around the Earth several times. Instruments in many countries recorded them.",
+  "level": "secondary"
+ },
+ {
+  "id": "sci-012",
+  "topic": "science",
+  "subjects": [
+   "Chemistry"
+  ],
+  "title": "Your phone is full of rare metals",
+  "body": "A phone uses dozens of elements, including tiny amounts of gold, copper and rare metals such as cobalt. That is one reason recycling old phones is so important."
+ }
+]

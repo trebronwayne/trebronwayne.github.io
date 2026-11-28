@@ -1,0 +1,101 @@
+{
+ "version": 1,
+ "updated": "2026-11-28",
+ "total": 124,
+ "topics": [
+  "science",
+  "nature",
+  "space",
+  "body",
+  "history",
+  "africa",
+  "maths",
+  "tech",
+  "language",
+  "ideas",
+  "world"
+ ],
+ "daily": {
+  "file": "daily.json",
+  "count": 116
+ },
+ "packs": [
+  {
+   "file": "packs/africa.json",
+   "count": 11,
+   "topics": [
+    "africa"
+   ]
+  },
+  {
+   "file": "packs/body.json",
+   "count": 11,
+   "topics": [
+    "body"
+   ]
+  },
+  {
+   "file": "packs/history.json",
+   "count": 11,
+   "topics": [
+    "history"
+   ]
+  },
+  {
+   "file": "packs/ideas.json",
+   "count": 12,
+   "topics": [
+    "ideas"
+   ]
+  },
+  {
+   "file": "packs/language.json",
+   "count": 11,
+   "topics": [
+    "language"
+   ]
+  },
+  {
+   "file": "packs/maths.json",
+   "count": 11,
+   "topics": [
+    "maths"
+   ]
+  },
+  {
+   "file": "packs/nature.json",
+   "count": 12,
+   "topics": [
+    "nature"
+   ]
+  },
+  {
+   "file": "packs/science.json",
+   "count": 12,
+   "topics": [
+    "science"
+   ]
+  },
+  {
+   "file": "packs/space.json",
+   "count": 11,
+   "topics": [
+    "space"
+   ]
+  },
+  {
+   "file": "packs/tech.json",
+   "count": 11,
+   "topics": [
+    "tech"
+   ]
+  },
+  {
+   "file": "packs/world.json",
+   "count": 11,
+   "topics": [
+    "world"
+   ]
+  }
+ ]
+}
