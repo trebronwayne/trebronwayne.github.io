@@ -1,0 +1,123 @@
+[
+ {
+  "id": "ide-001",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "Socrates asked questions",
+  "body": "The ancient Greek thinker Socrates did not lecture. He asked question after question to help people examine their own beliefs. This “Socratic method” is still used in classrooms and courts today."
+ },
+ {
+  "id": "ide-002",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "Ubuntu: “I am because we are”",
+  "body": "Ubuntu is an idea found across southern Africa. It says that a person becomes a person through other people, so kindness, sharing and community matter more than being the best alone."
+ },
+ {
+  "id": "ide-003",
+  "topic": "ideas",
+  "subjects": [
+   "Mathematics",
+   "Physics"
+  ],
+  "title": "Occam’s razor",
+  "body": "When two explanations fit the facts, the simpler one is usually the better one to try first. The idea is named after the 14th-century thinker William of Ockham."
+ },
+ {
+  "id": "ide-004",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "The cave that Plato imagined",
+  "body": "Plato imagined people chained in a cave who think the shadows on the wall are all that exists. His story asks: what if there is much more to the world than what we see?",
+  "level": "secondary"
+ },
+ {
+  "id": "ide-005",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "The Ship of Theseus",
+  "body": "If you replace every plank of a ship one at a time, is it still the same ship? Philosophers use this puzzle to ask what makes anything, or any person, “the same” over time."
+ },
+ {
+  "id": "ide-006",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "What you can and cannot control",
+  "body": "The Stoic thinker Epictetus taught that some things are up to us (our choices and effort) and some are not (the weather, other people’s opinions). Peace comes from focusing on the first."
+ },
+ {
+  "id": "ide-007",
+  "topic": "ideas",
+  "subjects": [
+   "English"
+  ],
+  "title": "A mind that grows",
+  "body": "Research by psychologist Carol Dweck suggests that learners who believe they can improve with effort tend to improve more. Making mistakes is part of how the brain builds new connections."
+ },
+ {
+  "id": "ide-008",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "The Golden Rule is everywhere",
+  "body": "“Treat others as you would like to be treated” appears in many religions and cultures, in different words, all over the world."
+ },
+ {
+  "id": "ide-009",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "Learning and thinking together",
+  "body": "Confucius taught, “Learning without thought is labour lost; thought without learning is perilous.” Both studying and thinking about what you study are needed."
+ },
+ {
+  "id": "ide-010",
+  "topic": "ideas",
+  "subjects": [
+   "English",
+   "History"
+  ],
+  "title": "“I think, therefore I am”",
+  "body": "The French thinker René Descartes asked what he could be certain of. He decided that even if he doubted everything, the fact that he was doubting proved that he existed.",
+  "level": "secondary"
+ },
+ {
+  "id": "ide-011",
+  "topic": "ideas",
+  "subjects": [
+   "Mathematics",
+   "History"
+  ],
+  "title": "Zeno and the tortoise",
+  "body": "In a famous puzzle the swift Achilles gives a tortoise a head start. Zeno argued he could never catch up, because he must first reach where the tortoise was, and it will have moved on. Maths later solved the puzzle.",
+  "level": "secondary"
+ },
+ {
+  "id": "ide-012",
+  "topic": "ideas",
+  "subjects": [
+   "English"
+  ],
+  "title": "A story to ask “why”",
+  "body": "In many African stories, such as those about the clever hare or Anansi the spider, a small creature wins by wit, not strength. These tales teach ideas about fairness, patience and thinking before acting."
+ }
+]

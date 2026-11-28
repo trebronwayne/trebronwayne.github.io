@@ -1,0 +1,104 @@
+[
+ {
+  "id": "tec-001",
+  "topic": "tech",
+  "subjects": [
+   "ICT",
+   "Physics"
+  ],
+  "title": "GPS needs Einstein",
+  "body": "Satellite clocks run slightly faster than clocks on the ground, because of the effects described by Einstein’s theory of relativity. GPS has to correct this, or your map position would drift by kilometres each day.",
+  "level": "secondary"
+ },
+ {
+  "id": "tec-002",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "The first computer bug was a real bug",
+  "body": "In 1947 the team working on the Harvard Mark II computer found a moth stuck in it. They taped it in their log book, and the word “bug” for a computer fault became famous."
+ },
+ {
+  "id": "tec-003",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "The first website",
+  "body": "The first website went live in 1991 at CERN, built by Tim Berners-Lee. It explained what the World Wide Web was."
+ },
+ {
+  "id": "tec-004",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "The first text message",
+  "body": "The first SMS was sent in December 1992 and said “Merry Christmas”."
+ },
+ {
+  "id": "tec-005",
+  "topic": "tech",
+  "subjects": [
+   "ICT",
+   "Mathematics"
+  ],
+  "title": "M-Pesa changed money in East Africa",
+  "body": "M-Pesa was launched in Kenya in 2007. It let people send and receive money using ordinary mobile phones, and similar services are now used by millions across Africa."
+ },
+ {
+  "id": "tec-006",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "Everything is 0s and 1s",
+  "body": "A computer stores everything, even photos and music, as bits: 0 or 1. Eight bits make a byte, and one letter on your screen takes one byte."
+ },
+ {
+  "id": "tec-007",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "Email is older than the Web",
+  "body": "Ray Tomlinson sent the first network email in 1971 and chose the @ sign to separate the user name from the computer name."
+ },
+ {
+  "id": "tec-008",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "The internet lives under the sea",
+  "body": "Most of the internet traffic between continents travels through cables lying on the ocean floor, not through satellites."
+ },
+ {
+  "id": "tec-009",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "The QR code came from a car factory",
+  "body": "QR codes were invented in Japan in 1994 to track car parts. The square pattern can be read quickly from any angle."
+ },
+ {
+  "id": "tec-010",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "Why passwords should be long",
+  "body": "A short password can be guessed by a computer in seconds, but each extra character makes it much harder. Three or four random words strung together are strong and easier to remember."
+ },
+ {
+  "id": "tec-011",
+  "topic": "tech",
+  "subjects": [
+   "ICT"
+  ],
+  "title": "Computers can’t really “think”",
+  "body": "A computer follows instructions very fast but only does what its program says. A programmer’s job is to break a problem into steps it can follow."
+ }
+]
