@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#3fc5c8">
+<title>Join Remote Schools</title>
+<meta property="og:title" content="You are invited to Remote Schools"><meta property="og:description" content="Free notes, quizzes and exams for Uganda P1–S4. Create your account in a minute.">
+<link rel="stylesheet" href="../rs-web.css"></head>
+<body><div id="app"></div><noscript><p style="padding:20px">Please turn on JavaScript to join Remote Schools.</p></noscript>
+<script type="module">
+import { auth, db, $, h, shell, query, openInAppButton, downloadBlock, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, doc, getDoc, setDoc, serverTimestamp } from '../rs-web.js';
+import { SITE } from '../rs-config.js';
+
+const clean = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return /^[A-HJKMNP-Z2-9]{8}$/.test(c) ? c : ''; };
+const pretty = c => (c.length === 8 ? c.slice(0, 4) + ' ' + c.slice(4) : c);
+let code = clean(query('ref')), mode = 'create', busy = false, error = '';
+
+const WHY = {
+  'auth/email-already-in-use': 'That email already has an account. Choose "I have an account" and sign in.',
+  'auth/invalid-email': 'That email does not look right.', 'auth/weak-password': 'Use a password with at least 6 characters.',
+  'auth/wrong-password': 'The email or password is not right.', 'auth/invalid-credential': 'The email or password is not right.', 'auth/user-not-found': 'No account with that email. Choose "Create account".',
+  'auth/too-many-requests': 'Too many tries. Wait a minute and try again.', 'auth/network-request-failed': 'No internet connection. Try again.',
+  'auth/popup-closed-by-user': '', 'auth/cancelled-popup-request': '', 'auth/popup-blocked': 'Your browser blocked the Google window. Allow pop-ups, or use your email.',
+  'auth/unauthorized-domain': 'Google sign-in is not switched on for this website yet. Use your email.',
+};
+
+/** Same as the app: records who invited this account, once. A wrong code never stops the account being created. */
+async function useCode(uid) {
+  if (!code) return 'none';
+  try {
+    if ((await getDoc(doc(db, 'referrals', uid))).exists()) return 'already';
+    const owner = await getDoc(doc(db, 'referralCodes', code));
+    if (!owner.exists()) return 'unknown';
+    const referrer = owner.data().uid;
+    if (referrer === uid) return 'own';
+    await setDoc(doc(db, 'referrals', uid), { code, referrer, progress: 0, qualified: false, createdAt: serverTimestamp() });
+    return 'ok';
+  } catch { return 'later'; }
+}
+
+function done(user, used) {
+  const note = { ok: 'Your invitation code was added, so your friend is credited as you learn.', unknown: 'Your account is ready, but that invitation code was not recognised.', later: 'Your account is ready. The invitation code could not be saved just now.', already: 'Your account is ready.', own: 'Your account is ready.', none: 'Your account is ready.' }[used];
+  shell(h('div', { class: 'card pad' }, h('p', { class: 'okmsg' }, '✓ Account ready'), h('h1', {}, 'One more step'), h('p', { class: 'muted' }, note),
+    h('ol', { class: 'steps' }, h('li', {}, 'Download the Remote Schools app below.'), h('li', {}, 'Open it and choose Sign in.'), h('li', {}, 'Use ' + (user.email ? 'the email ' + user.email : 'Google') + ' you just used here.')),
+    openInAppButton('I already have the app: open it'), downloadBlock()));
+}
+
+async function submit(e) {
+  e.preventDefault(); if (busy) return;
+  const email = $('#email').value.trim(), pw = $('#pw').value; code = clean($('#code').value);
+  if (!email || !pw) { error = 'Enter your email and a password.'; return draw(); }
+  busy = true; error = ''; draw();
+  try {
+    const cred = mode === 'create' ? await createUserWithEmailAndPassword(auth, email, pw) : await signInWithEmailAndPassword(auth, email, pw);
+    done(cred.user, await useCode(cred.user.uid));
+  } catch (err) { busy = false; error = WHY[err?.code] ?? 'Something went wrong. Please try again.'; draw(); }
+}
+async function google() {
+  if (busy) return; code = clean($('#code').value); busy = true; error = ''; draw();
+  try { const cred = await signInWithPopup(auth, new GoogleAuthProvider()); done(cred.user, await useCode(cred.user.uid)); }
+  catch (err) { busy = false; error = WHY[err?.code] ?? 'Google sign-in did not work. Use your email instead.'; draw(); }
+}
+function draw() {
+  const keep = { email: $('#email')?.value || '', code: $('#code')?.value };
+  const form = h('form', { onsubmit: submit, novalidate: true },
+    h('label', { for: 'code' }, 'Invitation code ' ), h('input', { id: 'code', class: 'code', value: code ? pretty(code) : keep.code || '', placeholder: 'ABCD 2345', autocomplete: 'off', autocapitalize: 'characters', maxlength: 12 }),
+    h('p', { class: 'muted', style: 'margin-top:6px' }, code ? 'From your friend\'s link. You can leave it or change it.' : 'Optional. Type it if a friend gave you one.'),
+    h('label', { for: 'email' }, 'Email'), h('input', { id: 'email', type: 'email', autocomplete: 'email', value: keep.email, placeholder: 'you@example.com' }),
+    h('label', { for: 'pw' }, mode === 'create' ? 'Create a password' : 'Password'), h('input', { id: 'pw', type: 'password', autocomplete: mode === 'create' ? 'new-password' : 'current-password', placeholder: 'At least 6 characters' }),
+    error && h('p', { class: 'err', role: 'alert' }, error),
+    h('button', { class: 'btn', type: 'submit', disabled: busy }, busy ? 'Please wait…' : mode === 'create' ? 'Create my account' : 'Sign in and add the code'),
+    h('button', { class: 'btn alt', type: 'button', onclick: google, disabled: busy }, 'Continue with Google'),
+    h('button', { class: 'btn alt', type: 'button', onclick: () => { mode = mode === 'create' ? 'signin' : 'create'; error = ''; draw(); }, disabled: busy }, mode === 'create' ? 'I already have an account' : 'Create a new account'),
+    h('p', { class: 'muted', style: 'margin-top:14px' }, 'By continuing you accept the ', h('a', { href: SITE + 'terms.html' }, 'Terms of Use'), ' and ', h('a', { href: SITE + 'privacy.html' }, 'Privacy Policy'), '.'));
+  shell(h('div', { class: 'card' }, h('div', { class: 'banner' }), h('div', { class: 'pad' }, h('h1', {}, code ? 'You are invited 🎉' : 'Join Remote Schools'),
+    h('p', { class: 'muted' }, 'Free notes, quizzes and exams for Uganda P1–S4, even offline. Create your account here, then download the app and sign in.'), form)));
+  if (keep.email) $('#pw')?.focus();
+}
+draw();
+</script></body></html>

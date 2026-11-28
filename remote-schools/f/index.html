@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#3fc5c8">
+<title>Shared on Remote Schools</title>
+<meta property="og:title" content="A file shared on Remote Schools"><meta property="og:description" content="Notes, past papers and revision shared by students and teachers.">
+<meta property="og:image" content="https://trebronwayne.github.io/remote-schools/icon-512.png">
+<link rel="stylesheet" href="../rs-web.css"></head>
+<body><div id="app"></div><noscript><p style="padding:20px">Please turn on JavaScript to see this file.</p></noscript>
+<script type="module">
+import { auth, db, h, $, shell, loading, message, query, safeId, doc, getDoc, writeBatch, increment, serverTimestamp, signInAnonymously, onAuthStateChanged, openInAppButton, downloadBlock, spanLabel, KINDS, avatar } from '../rs-web.js';
+import { COMMUNITY_API } from '../rs-config.js';
+
+const id = safeId(query('id'));
+const fmtSize = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB');
+const loadScript = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); });
+
+/** Counts one view per device: this device gets an anonymous id (kept by the browser), and a second visit from it is never counted again. */
+async function countView(item) {
+  try {
+    const user = auth.currentUser || (await signInAnonymously(auth)).user;
+    if (!user || user.uid === item.owner) return null;
+    const viewer = doc(db, 'community', id, 'viewers', user.uid);
+    if ((await getDoc(viewer)).exists()) return null;
+    const b = writeBatch(db); b.set(viewer, { at: serverTimestamp() }); b.update(doc(db, 'community', id), { viewCount: increment(1) });
+    await b.commit(); return true;
+  } catch { return null; }   // anonymous sign-in off, or no internet: the page still works
+}
+
+async function previewPdf(box, fileId) {
+  if (!COMMUNITY_API.startsWith('https://')) return;
+  try {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf = await pdfjsLib.getDocument({ url: `${COMMUNITY_API.replace(/\/$/, '')}/files/${encodeURIComponent(fileId)}` }).promise;
+    const n = Math.min(pdf.numPages, 3);
+    box.replaceChildren();
+    for (let i = 1; i <= n; i++) {
+      const page = await pdf.getPage(i), vp0 = page.getViewport({ scale: 1 }), width = Math.min(box.clientWidth || 520, 700), vp = page.getViewport({ scale: (width * 2) / vp0.width });
+      const cv = h('canvas'); cv.width = vp.width; cv.height = vp.height; box.append(cv);
+      await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    }
+    box.append(h('p', { class: 'muted' }, pdf.numPages > n ? `Showing the first ${n} of ${pdf.numPages} pages. Open the app to read the whole file.` : 'Open the app to save it and read offline.'));
+  } catch { box.replaceChildren(); }
+}
+
+loading();
+if (!id) message('This link is not complete', 'Ask the person to share the file again.');
+else getDoc(doc(db, 'community', id)).then(async snap => {
+  if (!snap.exists() || snap.data().suspended === true) return message('This file is not available', 'It may have been removed, or it is still being reviewed.');
+  const it = snap.data(); it.owner = String(it.owner || '');
+  let owner = null; try { const o = await getDoc(doc(db, 'creators', it.owner)); if (o.exists() && o.data().suspended !== true) owner = o.data(); else if (o.exists()) return message('This file is not available', 'It may have been removed.'); } catch {}
+  const views = Number(it.viewCount) || 0, rc = Number(it.ratingCount) || 0, avg = rc ? (Number(it.ratingSum) / rc).toFixed(1) : '–';
+  const title = String(it.title || 'Shared file').slice(0, 120);
+  document.title = `${title} · Remote Schools`;
+  const box = h('div', { class: 'preview' });
+  const viewsEl = h('strong', {}, String(views));
+  shell(h('div', {},
+    h('div', { class: 'card' },
+      /^data:image\/(jpeg|png|webp);base64,/.test(it.thumb || '') ? h('img', { class: 'thumb', src: it.thumb, alt: '' }) : h('div', { class: 'banner' }),
+      h('div', { class: 'pad' },
+        h('p', {}, h('span', { class: 'pill' }, KINDS[it.kind] || 'File'), h('span', { class: 'pill' }, spanLabel(String(it.level || ''), it.levelTo)), h('span', { class: 'muted' }, [it.subject, it.year || ''].filter(Boolean).join(' · '))),
+        h('h1', {}, title),
+        it.description ? h('p', {}, String(it.description).slice(0, 400)) : null,
+        owner ? h('div', { style: 'display:flex;align-items:center;gap:10px;margin:10px 0' }, Object.assign(avatar(owner.photo, owner.name), { style: 'width:40px;height:40px;font-size:16px;border-width:2px' }), h('div', {}, h('b', {}, String(owner.name || '').slice(0, 60)), owner.verified === true ? h('span', { class: 'pill ok', style: 'margin-left:6px' }, '✓') : null, h('div', { class: 'muted' }, (owner.role === 'teacher' ? 'Teacher' : 'Student') + (owner.school ? ' · ' + owner.school : '')))) : null,
+        h('div', { class: 'stats' }, h('div', {}, viewsEl, h('span', {}, 'views')), h('div', {}, h('strong', {}, avg), h('span', {}, `rating (${rc})`)), h('div', {}, h('strong', {}, it.size ? fmtSize(Number(it.size)) : '–'), h('span', {}, String(it.format || 'file').toUpperCase()))),
+        box,
+        openInAppButton('Open in the app'))),
+    h('div', { class: 'card pad', style: 'margin-top:14px' }, h('h2', {}, 'Get Remote Schools'), h('p', { class: 'muted' }, 'Save files for offline study, rate them and share your own.'), downloadBlock())));
+  if ((it.format || 'pdf') === 'pdf') void previewPdf(box, String(it.fileId || ''));
+  const counted = await countView(it); if (counted) viewsEl.textContent = String(views + 1);
+}).catch(() => message('Could not load this file', 'Check your internet connection and open the link again.'));
+</script></body></html>

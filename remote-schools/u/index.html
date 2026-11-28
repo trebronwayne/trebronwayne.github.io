@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#3fc5c8">
+<title>Remote Schools community profile</title>
+<meta property="og:title" content="Remote Schools community profile"><meta property="og:description" content="See this person's shared notes, past papers and revision on Remote Schools.">
+<meta property="og:image" content="https://trebronwayne.github.io/remote-schools/icon-512.png">
+<link rel="stylesheet" href="../rs-web.css"></head>
+<body><div id="app"></div><noscript><p style="padding:20px">Please turn on JavaScript to see this profile.</p></noscript>
+<script type="module">
+import { db, h, shell, loading, message, query, safeId, doc, getDoc, openInAppButton, downloadBlock, visibleLinks, avatar, hostOf } from '../rs-web.js';
+
+const id = safeId(query('id'));
+loading();
+if (!id) message('This link is not complete', 'Ask the person to share their profile again.');
+else getDoc(doc(db, 'creators', id)).then(snap => {
+  if (!snap.exists() || snap.data().suspended === true) return message('This profile is not available', 'It may have been removed, or the link is wrong.');
+  const c = snap.data(), name = String(c.name || 'Remote Schools member').slice(0, 60), links = visibleLinks(c);
+  document.title = `${name} on Remote Schools`;
+  const since = c.createdAt?.toDate ? c.createdAt.toDate().toLocaleDateString('en', { month: 'long', year: 'numeric' }) : '';
+  shell(h('div', {},
+    h('div', { class: 'card' }, h('div', { class: 'banner' }),
+      h('div', { class: 'who' }, avatar(c.photo, name)),
+      h('div', { class: 'pad' },
+        h('h1', {}, name),
+        h('p', {}, h('span', { class: 'pill' }, c.role === 'teacher' ? 'Teacher' : 'Student'), c.verified === true && h('span', { class: 'pill ok' }, '✓ Verified'), c.school ? h('span', { class: 'muted' }, c.school) : null),
+        c.bio ? h('p', {}, String(c.bio).slice(0, 200)) : null,
+        since ? h('p', { class: 'muted' }, 'Sharing on Remote Schools since ' + since) : null,
+        links.length ? h('div', {}, h('div', { class: 'links' }, links.map(u => h('a', { href: u, rel: 'noopener nofollow ugc', target: '_blank' }, hostOf(u)))), h('p', { class: 'muted' }, 'These links were added by the person and open outside Remote Schools. Do not share personal details with people you do not know.')) : null,
+        h('p', { class: 'muted' }, 'Open this profile in the app to see their shared files, ratings and level.'),
+        openInAppButton('View profile in the app'))),
+    h('div', { class: 'card pad', style: 'margin-top:14px' }, h('h2', {}, 'New to Remote Schools?'), h('p', { class: 'muted' }, 'Free notes, quizzes and exams for Uganda P1–S4. Works offline.'), downloadBlock())));
+}).catch(() => message('Could not load this profile', 'Check your internet connection and open the link again.'));
+</script></body></html>

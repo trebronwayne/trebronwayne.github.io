@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.trebronwayne.remoteschools",
+    "sha256_cert_fingerprints": ["PASTE:YOUR:RELEASE:KEY:SHA-256:FINGERPRINT:HERE"]
+  }
+}]
